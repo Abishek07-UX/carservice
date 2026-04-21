@@ -14,7 +14,7 @@ public class User extends Person {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Role role = Role.USER;
+    private Role role = Role.USER; 
 
     // Polymorphism: implementing abstract method
     @Override
