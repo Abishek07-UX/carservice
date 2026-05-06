@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Reports &amp; Analytics | AutoTrack</title>
+    <meta name="description" content="AutoTrack analytics — service costs, repair trends, and monthly expenses"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<aside class="sidebar" id="sidebar">
+    <a class="sidebar-brand" th:href="@{/dashboard}">
+        <div class="brand-icon">🚗</div>
+        <div><div class="brand-name">AutoTrack</div><div class="brand-sub">Car Management</div></div>
+    </a>
+    <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a th:href="@{/dashboard}" class="nav-link"><span class="nav-icon">📊</span> Dashboard</a>
+        <a th:href="@{/cars}" class="nav-link"><span class="nav-icon">🚘</span> All Cars</a>
+        <a th:href="@{/cars/add}" class="nav-link"><span class="nav-icon">➕</span> Add Car</a>
+        <div class="nav-section-label">Reports</div>
+        <a th:href="@{/reports}" class="nav-link active"><span class="nav-icon">📈</span> Analytics</a>
+        <div class="nav-section-label">System</div>
+        <a href="/h2-console" target="_blank" class="nav-link"><span class="nav-icon">🗄️</span> Database</a>
+    </nav>
+    <div class="sidebar-footer"><p>AutoTrack v1.0 &copy; 2025</p></div>
+</aside>
+<div class="main-content">
+    <header class="topbar">
+        <div class="flex items-center gap-12">
+            <button onclick="document.getElementById('sidebar').classList.toggle('open')"
+                    class="btn btn-secondary btn-icon" style="display:none" id="menuBtn">☰</button>
+            <h1 class="topbar-title">Reports &amp; Analytics</h1>
+        </div>
+    </header>
+    <main class="page-content">
+
+        <!-- Summary Stats -->
+        <div class="stats-grid" style="margin-bottom:28px">
+            <div class="stat-card" style="--accent-color:var(--accent)">
+                <div class="stat-icon">🚘</div>
+                <div><div class="stat-value" th:text="${totalCars}">0</div><div class="stat-label">Total Cars</div></div>
+            </div>
+            <div class="stat-card" style="--accent-color:var(--green)">
+                <div class="stat-icon" style="background:rgba(63,185,80,0.15)">💰</div>
+                <div>
+                    <div class="stat-value" th:text="'$' + ${#numbers.formatDecimal(totalServiceCost,1,2)}">$0</div>
+                    <div class="stat-label">Total Service Cost</div>
+                </div>
+            </div>
+            <div class="stat-card" style="--accent-color:var(--yellow)">
+                <div class="stat-icon" style="background:rgba(227,179,65,0.15)">🔧</div>
+                <div><div class="stat-value" th:text="${activeRepairs}">0</div><div class="stat-label">Active Repairs</div></div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid-2" style="margin-bottom:24px">
+            <div class="card">
+                <div class="card-header"><span class="card-title">📅 Monthly Service Costs</span></div>
+                <div class="card-body"><div class="chart-container"><canvas id="monthlyChart"></canvas></div></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span class="card-title">🔁 Service Type Distribution</span></div>
+                <div class="card-body"><div class="chart-container"><canvas id="freqChart"></canvas></div></div>
+            </div>
+        </div>
+
+        <!-- Per-Car Cost Breakdown -->
+        <div class="card" style="margin-bottom:24px">
+            <div class="card-header"><span class="card-title">🚘 Cost Per Vehicle</span></div>
+            <div class="card-body" style="padding-bottom:8px">
+                <div class="chart-container" style="height:320px"><canvas id="perCarChart"></canvas></div>
+            </div>
+        </div>
+
+        <!-- Per-Car Table -->
+        <div class="card">
+            <div class="card-header"><span class="card-title">📋 Vehicle Cost Summary</span></div>
+            <div class="table-wrapper" style="border:none">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Vehicle</th>
+                            <th>Service Cost</th>
+                            <th>Repair Cost</th>
+                            <th>Total Spent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(carServiceCosts)}">
+                            <td colspan="4">
+                                <div class="empty-state" style="padding:32px">
+                                    <div class="empty-state-icon">📊</div>
+                                    <p>No data available yet. Add cars and service records to see analytics.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:each="row : ${carServiceCosts}">
+                            <td class="fw-600" th:text="${row[0]}"></td>
+                            <td class="text-green" th:text="'$' + ${#numbers.formatDecimal(row[1],1,2)}"></td>
+                            <td class="text-red"   th:text="'$' + ${#numbers.formatDecimal(row[2],1,2)}"></td>
+                            <td class="text-accent fw-600"
+                                th:text="'$' + ${#numbers.formatDecimal(row[1] + row[2],1,2)}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+<style>@media(max-width:900px){#menuBtn{display:flex!important}}</style>
+<script>
+const monthlyData = /*[[${monthlyCosts}]]*/ [];
+const freqData    = /*[[${serviceFrequency}]]*/ [];
+const carCosts    = /*[[${carServiceCosts}]]*/ [];
+
+const months  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const palette = ['#f97316','#58a6ff','#3fb950','#e3b341','#bc8cff','#f85149','#39d353','#ffd700'];
+const baseOpts = {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#8b949e',font:{family:'Inter',size:12}}}},
+    scales:{
+        x:{ticks:{color:'#8b949e'},grid:{color:'#21262d'}},
+        y:{ticks:{color:'#8b949e'},grid:{color:'#21262d'}},
+    }
+};
+
+// Monthly bar
+new Chart(document.getElementById('monthlyChart'),{
+    type:'bar',
+    data:{
+        labels: monthlyData.map(r=>months[(r[0]||1)-1]),
+        datasets:[{
+            label:'Cost ($)', data:monthlyData.map(r=>r[1]||0),
+            backgroundColor:'rgba(249,115,22,0.65)',
+            borderColor:'#f97316', borderWidth:2, borderRadius:6,
+        }]
+    },
+    options:{...baseOpts}
+});
+
+// Doughnut
+new Chart(document.getElementById('freqChart'),{
+    type:'doughnut',
+    data:{
+        labels:freqData.map(r=>r[0]),
+        datasets:[{data:freqData.map(r=>r[1]),backgroundColor:palette,borderWidth:0,hoverOffset:10}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#8b949e',font:{family:'Inter'}}}}}
+});
+
+// Horizontal bar per car
+new Chart(document.getElementById('perCarChart'),{
+    type:'bar',
+    data:{
+        labels: carCosts.map(r=>r[0]),
+        datasets:[
+            {label:'Service ($)',data:carCosts.map(r=>r[1]),backgroundColor:'rgba(63,185,80,0.7)',borderRadius:4},
+            {label:'Repair ($)', data:carCosts.map(r=>r[2]),backgroundColor:'rgba(248,81,73,0.7)',borderRadius:4},
+        ]
+    },
+    options:{
+        ...baseOpts,
+        indexAxis:'y',
+        plugins:{legend:{labels:{color:'#8b949e',font:{family:'Inter'}}}},
+        scales:{
+            x:{ticks:{color:'#8b949e'},grid:{color:'#21262d'},stacked:false},
+            y:{ticks:{color:'#e6edf3'},grid:{color:'#21262d'}},
+        }
+    }
+});
+</script>
+</body>
+</html>

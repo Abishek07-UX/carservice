@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard | AutoTrack</title>
+    <meta name="description" content="AutoTrack Car Management System Dashboard"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <a class="sidebar-brand" th:href="@{/dashboard}">
+        <div class="brand-icon">🚗</div>
+        <div>
+            <div class="brand-name">AutoTrack</div>
+            <div class="brand-sub">Car Management</div>
+        </div>
+    </a>
+    <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a th:href="@{/dashboard}" class="nav-link active">
+            <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a th:href="@{/cars}" class="nav-link">
+            <span class="nav-icon">🚘</span> All Cars
+        </a>
+        <a th:href="@{/cars/add}" class="nav-link">
+            <span class="nav-icon">➕</span> Add Car
+        </a>
+        <div class="nav-section-label">Reports</div>
+        <a th:href="@{/reports}" class="nav-link">
+            <span class="nav-icon">📈</span> Analytics
+        </a>
+        <div class="nav-section-label">System</div>
+        <a href="/h2-console" target="_blank" class="nav-link">
+            <span class="nav-icon">🗄️</span> Database
+        </a>
+    </nav>
+    <div class="sidebar-footer"><p>AutoTrack v1.0 &copy; 2025</p></div>
+</aside>
+
+<div class="main-content">
+    <header class="topbar">
+        <div class="flex items-center gap-12">
+            <button onclick="document.getElementById('sidebar').classList.toggle('open')"
+                    class="btn btn-secondary btn-icon" style="display:none" id="menuBtn">☰</button>
+            <h1 class="topbar-title">Dashboard</h1>
+        </div>
+        <div class="topbar-actions">
+            <a th:href="@{/cars/add}" class="btn btn-primary"><span>➕</span> Add Car</a>
+        </div>
+    </header>
+
+    <main class="page-content">
+        <div th:if="${successMsg}" class="alert alert-success"><span>✅</span> <span th:text="${successMsg}"></span></div>
+        <div th:if="${errorMsg}" class="alert alert-error"><span>❌</span> <span th:text="${errorMsg}"></span></div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card" style="--accent-color:var(--accent)">
+                <div class="stat-icon">🚘</div>
+                <div>
+                    <div class="stat-value" th:text="${totalCars}">0</div>
+                    <div class="stat-label">Total Cars</div>
+                </div>
+            </div>
+            <div class="stat-card" style="--accent-color:var(--green)">
+                <div class="stat-icon" style="background:rgba(63,185,80,0.15)">💰</div>
+                <div>
+                    <div class="stat-value" th:text="'$' + ${#numbers.formatDecimal(totalServiceCost,1,2)}">$0</div>
+                    <div class="stat-label">Total Service Cost</div>
+                </div>
+            </div>
+            <div class="stat-card" style="--accent-color:var(--yellow)">
+                <div class="stat-icon" style="background:rgba(227,179,65,0.15)">🔧</div>
+                <div>
+                    <div class="stat-value" th:text="${activeRepairs}">0</div>
+                    <div class="stat-label">Active Repairs</div>
+                </div>
+            </div>
+            <div class="stat-card" style="--accent-color:var(--red)">
+                <div class="stat-icon" style="background:rgba(248,81,73,0.15)">🔔</div>
+                <div>
+                    <div class="stat-value" th:text="${activeAlerts}">0</div>
+                    <div class="stat-label">Maintenance Alerts</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:24px">
+            <!-- Monthly Cost Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">📅 Monthly Service Costs</span>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <!-- Service Frequency Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">🔁 Service Type Frequency</span>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="freqChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <!-- Recent Cars -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">🚘 Recent Cars</span>
+                    <a th:href="@{/cars}" class="btn btn-secondary btn-sm">View All</a>
+                </div>
+                <div class="table-wrapper" style="border:none">
+                    <table>
+                        <thead>
+                            <tr><th>Vehicle #</th><th>Owner</th><th>Brand</th><th>Mileage</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(recentCars)}">
+                                <td colspan="4" class="empty-state" style="padding:32px">
+                                    <div class="empty-state-icon">🚗</div>
+                                    <p>No cars registered yet</p>
+                                </td>
+                            </tr>
+                            <tr th:each="car : ${recentCars}">
+                                <td><a th:href="@{/cars/{id}(id=${car.id})}"
+                                       class="text-accent fw-600" th:text="${car.vehicleNumber}"></a></td>
+                                <td th:text="${car.ownerName}"></td>
+                                <td th:text="${car.brand + ' ' + car.model}"></td>
+                                <td th:text="${car.mileage != null ? #numbers.formatDecimal(car.mileage,1,0) + ' km' : '-'}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Active Alerts -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">🔔 Maintenance Alerts</span>
+                </div>
+                <div class="card-body">
+                    <div th:if="${#lists.isEmpty(alerts)}" class="empty-state">
+                        <div class="empty-state-icon">✅</div>
+                        <p>No active alerts</p>
+                    </div>
+                    <div th:each="alert : ${alerts}" class="alert-card warning">
+                        <span class="alert-card-icon">⚠️</span>
+                        <div class="alert-card-content">
+                            <div class="alert-card-title" th:text="${alert.alertType}"></div>
+                            <div class="alert-card-meta">
+                                <span th:text="${alert.message}"></span>
+                                <span th:if="${alert.dueDateAlert != null}"
+                                      th:text="' · Due: ' + ${alert.dueDateAlert}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>@media(max-width:900px){#menuBtn{display:flex!important}}</style>
+<script>
+const monthlyData = /*[[${monthlyCosts}]]*/ [];
+const freqData    = /*[[${serviceFrequency}]]*/ [];
+
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const chartDefaults = {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#8b949e',font:{family:'Inter'}}}},
+};
+
+// Monthly cost bar chart
+new Chart(document.getElementById('monthlyChart'), {
+    type:'bar',
+    data:{
+        labels: monthlyData.map(r => months[(r[0]||1)-1]),
+        datasets:[{
+            label:'Service Cost ($)',
+            data: monthlyData.map(r => r[1]||0),
+            backgroundColor:'rgba(249,115,22,0.6)',
+            borderColor:'#f97316',
+            borderWidth:2,
+            borderRadius:6,
+        }]
+    },
+    options:{...chartDefaults, scales:{
+        x:{ticks:{color:'#8b949e'},grid:{color:'#21262d'}},
+        y:{ticks:{color:'#8b949e'},grid:{color:'#21262d'}},
+    }}
+});
+
+// Service frequency doughnut
+new Chart(document.getElementById('freqChart'), {
+    type:'doughnut',
+    data:{
+        labels: freqData.map(r => r[0]),
+        datasets:[{
+            data: freqData.map(r => r[1]),
+            backgroundColor:['#f97316','#58a6ff','#3fb950','#e3b341','#bc8cff','#f85149'],
+            borderWidth:0,
+            hoverOffset:8,
+        }]
+    },
+    options:{...chartDefaults}
+});
+
+setTimeout(()=>{
+    document.querySelectorAll('.alert').forEach(a=>{
+        a.style.transition='opacity 0.5s';a.style.opacity='0';
+        setTimeout(()=>a.remove(),500);
+    });
+},4000);
+</script>
+</body>
+</html>

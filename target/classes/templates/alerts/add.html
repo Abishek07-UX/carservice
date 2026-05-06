@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Set Maintenance Alert | AutoTrack</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<aside class="sidebar" id="sidebar">
+    <a class="sidebar-brand" th:href="@{/dashboard}">
+        <div class="brand-icon">🚗</div>
+        <div><div class="brand-name">AutoTrack</div><div class="brand-sub">Car Management</div></div>
+    </a>
+    <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a th:href="@{/dashboard}" class="nav-link"><span class="nav-icon">📊</span> Dashboard</a>
+        <a th:href="@{/cars}" class="nav-link active"><span class="nav-icon">🚘</span> All Cars</a>
+        <a th:href="@{/cars/add}" class="nav-link"><span class="nav-icon">➕</span> Add Car</a>
+        <div class="nav-section-label">Reports</div>
+        <a th:href="@{/reports}" class="nav-link"><span class="nav-icon">📈</span> Analytics</a>
+    </nav>
+    <div class="sidebar-footer"><p>AutoTrack v1.0 &copy; 2025</p></div>
+</aside>
+<div class="main-content">
+    <header class="topbar">
+        <div class="flex items-center gap-12">
+            <button onclick="document.getElementById('sidebar').classList.toggle('open')"
+                    class="btn btn-secondary btn-icon" style="display:none" id="menuBtn">☰</button>
+            <h1 class="topbar-title">Set Maintenance Alert</h1>
+        </div>
+        <div class="topbar-actions">
+            <a th:href="@{/cars/{id}(id=${carId})}" class="btn btn-secondary">← Back to Car</a>
+        </div>
+    </header>
+    <main class="page-content">
+        <div class="card">
+            <div class="card-header"><span class="card-title">🔔 New Maintenance Reminder</span></div>
+            <div class="card-body">
+                <form th:action="@{/cars/{id}/alerts/add(id=${carId})}" method="post"
+                      th:object="${alert}" id="addAlertForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Alert Type</label>
+                            <select th:field="*{alertType}" class="form-control" id="alertType">
+                                <option value="Oil Change Required">Oil Change Required</option>
+                                <option value="Service Due Soon">Service Due Soon</option>
+                                <option value="Tyre Check">Tyre Check</option>
+                                <option value="Insurance Renewal">Insurance Renewal</option>
+                                <option value="Registration Renewal">Registration Renewal</option>
+                                <option value="Battery Check">Battery Check</option>
+                                <option value="Brake Inspection">Brake Inspection</option>
+                                <option value="Custom">Custom</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Due Date (optional)</label>
+                            <input type="date" th:field="*{dueDateAlert}" class="form-control" id="dueDate"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Due at Mileage (km, optional)</label>
+                            <input type="number" th:field="*{dueMileageAlert}" class="form-control"
+                                   placeholder="e.g. 50000" min="0" id="dueMileage"/>
+                        </div>
+                        <div class="form-group" style="grid-column:1/-1">
+                            <label>Message / Note</label>
+                            <textarea th:field="*{message}" class="form-control"
+                                      placeholder="e.g. Engine oil change overdue, book appointment at AutoFix" id="alertMessage"></textarea>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-12" style="margin-top:20px">
+                        <a th:href="@{/cars/{id}(id=${carId})}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary" id="saveAlert">🔔 Set Alert</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+<style>@media(max-width:900px){#menuBtn{display:flex!important}}</style>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>All Cars | AutoTrack</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<aside class="sidebar" id="sidebar">
+    <a class="sidebar-brand" th:href="@{/dashboard}">
+        <div class="brand-icon">🚗</div>
+        <div><div class="brand-name">AutoTrack</div><div class="brand-sub">Car Management</div></div>
+    </a>
+    <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a th:href="@{/dashboard}" class="nav-link"><span class="nav-icon">📊</span> Dashboard</a>
+        <a th:href="@{/cars}" class="nav-link active"><span class="nav-icon">🚘</span> All Cars</a>
+        <a th:href="@{/cars/add}" class="nav-link"><span class="nav-icon">➕</span> Add Car</a>
+        <div class="nav-section-label">Reports</div>
+        <a th:href="@{/reports}" class="nav-link"><span class="nav-icon">📈</span> Analytics</a>
+        <div class="nav-section-label">System</div>
+        <a href="/h2-console" target="_blank" class="nav-link"><span class="nav-icon">🗄️</span> Database</a>
+    </nav>
+    <div class="sidebar-footer"><p>AutoTrack v1.0 &copy; 2025</p></div>
+</aside>
+<div class="main-content">
+    <header class="topbar">
+        <div class="flex items-center gap-12">
+            <button onclick="document.getElementById('sidebar').classList.toggle('open')"
+                    class="btn btn-secondary btn-icon" style="display:none" id="menuBtn">☰</button>
+            <h1 class="topbar-title">All Cars</h1>
+        </div>
+        <div class="topbar-actions">
+            <a th:href="@{/cars/add}" class="btn btn-primary"><span>➕</span> Add Car</a>
+        </div>
+    </header>
+    <main class="page-content">
+        <div th:if="${successMsg}" class="alert alert-success"><span>✅</span> <span th:text="${successMsg}"></span></div>
+
+        <!-- Search & Filter -->
+        <div class="card" style="margin-bottom:20px">
+            <div class="card-body" style="padding:16px">
+                <form th:action="@{/cars}" method="get" class="flex flex-wrap gap-12 items-center">
+                    <div class="search-input-wrap">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" name="search" class="form-control search-input"
+                               placeholder="Search by owner or vehicle number..."
+                               th:value="${search}" id="searchInput"/>
+                    </div>
+                    <select name="brand" class="form-control" style="width:auto;min-width:140px" id="brandFilter">
+                        <option value="">All Brands</option>
+                        <option th:each="b : ${brands}" th:value="${b}" th:text="${b}"
+                                th:selected="${b == brand}"></option>
+                    </select>
+                    <select name="fuelType" class="form-control" style="width:auto;min-width:130px" id="fuelFilter">
+                        <option value="">All Fuel Types</option>
+                        <option value="Petrol"   th:selected="${fuelType == 'Petrol'}">Petrol</option>
+                        <option value="Diesel"   th:selected="${fuelType == 'Diesel'}">Diesel</option>
+                        <option value="Electric" th:selected="${fuelType == 'Electric'}">Electric</option>
+                        <option value="Hybrid"   th:selected="${fuelType == 'Hybrid'}">Hybrid</option>
+                    </select>
+                    <select name="sort" class="form-control" style="width:auto;min-width:120px" id="sortSelect">
+                        <option value="">Sort By</option>
+                        <option value="mileage" th:selected="${sort == 'mileage'}">Mileage</option>
+                        <option value="date"    th:selected="${sort == 'date'}">Last Service</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary" id="applyFilters">Apply</button>
+                    <a th:href="@{/cars}" class="btn btn-secondary" id="clearFilters">Clear</a>
+                </form>
+            </div>
+        </div>
+
+        <!-- Cars Table -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">🚘 Registered Vehicles
+                    <span class="badge badge-pending" style="margin-left:8px" th:text="${#lists.size(cars)}"></span>
+                </span>
+            </div>
+            <div class="table-wrapper" style="border:none">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Car ID</th>
+                            <th>Vehicle #</th>
+                            <th>Owner</th>
+                            <th>Brand &amp; Model</th>
+                            <th>Year</th>
+                            <th>Fuel</th>
+                            <th>Mileage</th>
+                            <th>Last Service</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(cars)}">
+                            <td colspan="9">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">🚗</div>
+                                    <p>No cars registered yet.</p>
+                                    <a th:href="@{/cars/add}" class="btn btn-primary" id="addFirstCar">Add Your First Car</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:each="car : ${cars}">
+                            <td><span class="text-muted text-xs" th:text="${car.carId}"></span></td>
+                            <td>
+                                <a th:href="@{/cars/{id}(id=${car.id})}"
+                                   class="text-accent fw-600" th:text="${car.vehicleNumber}"></a>
+                            </td>
+                            <td>
+                                <div class="fw-600" th:text="${car.ownerName}"></div>
+                                <div class="text-xs text-muted" th:text="${car.contactNumber}"></div>
+                            </td>
+                            <td th:text="${car.brand + ' ' + car.model}"></td>
+                            <td th:text="${car.yearOfManufacture}"></td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${'badge-' + #strings.toLowerCase(car.fuelType)}"
+                                      th:text="${car.fuelType}"></span>
+                            </td>
+                            <td th:text="${car.mileage != null ? #numbers.formatDecimal(car.mileage,1,0) + ' km' : '-'}"></td>
+                            <td th:text="${car.lastServiceDate != null ? car.lastServiceDate : 'Never'}"></td>
+                            <td>
+                                <div class="flex gap-8">
+                                    <a th:href="@{/cars/{id}(id=${car.id})}" class="btn btn-info btn-sm" title="View">👁</a>
+                                    <a th:href="@{/cars/{id}/edit(id=${car.id})}" class="btn btn-secondary btn-sm" title="Edit">✏️</a>
+                                    <form th:action="@{/cars/{id}/delete(id=${car.id})}" method="post"
+                                          onsubmit="return confirm('Delete this car and all its records?')">
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Delete">🗑</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+<style>@media(max-width:900px){#menuBtn{display:flex!important}}</style>
+<script>
+setTimeout(()=>{document.querySelectorAll('.alert').forEach(a=>{a.style.transition='opacity 0.5s';a.style.opacity='0';setTimeout(()=>a.remove(),500);});},4000);
+</script>
+</body>
+</html>

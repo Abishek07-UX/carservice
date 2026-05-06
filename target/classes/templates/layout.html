@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${pageTitle} + ' | AutoTrack'">AutoTrack</title>
+    <meta name="description" th:content="${pageDesc} ?: 'AutoTrack Car Management System'"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <a class="sidebar-brand" th:href="@{/dashboard}">
+        <div class="brand-icon">🚗</div>
+        <div>
+            <div class="brand-name">AutoTrack</div>
+            <div class="brand-sub">Car Management</div>
+        </div>
+    </a>
+    <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a th:href="@{/dashboard}" th:classappend="${activePage=='dashboard'?'active':''}" class="nav-link">
+            <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a th:href="@{/cars}" th:classappend="${activePage=='cars'?'active':''}" class="nav-link">
+            <span class="nav-icon">🚘</span> All Cars
+        </a>
+        <a th:href="@{/cars/add}" th:classappend="${activePage=='add-car'?'active':''}" class="nav-link">
+            <span class="nav-icon">➕</span> Add Car
+        </a>
+
+        <div class="nav-section-label">Reports</div>
+        <a th:href="@{/reports}" th:classappend="${activePage=='reports'?'active':''}" class="nav-link">
+            <span class="nav-icon">📈</span> Analytics
+        </a>
+
+        <div class="nav-section-label">System</div>
+        <a href="/h2-console" target="_blank" class="nav-link">
+            <span class="nav-icon">🗄️</span> Database
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <p>AutoTrack v1.0 &copy; 2025</p>
+    </div>
+</aside>
+
+<!-- Main Content -->
+<div class="main-content">
+    <header class="topbar">
+        <div class="flex items-center gap-12">
+            <button onclick="document.getElementById('sidebar').classList.toggle('open')"
+                    class="btn btn-secondary btn-icon" style="display:none" id="menuBtn">☰</button>
+            <h1 class="topbar-title" th:text="${pageTitle} ?: 'Dashboard'">Dashboard</h1>
+        </div>
+        <div class="topbar-actions">
+            <a th:href="@{/cars/add}" class="btn btn-primary">
+                <span>➕</span> Add Car
+            </a>
+        </div>
+    </header>
+
+    <main class="page-content">
+        <!-- Flash Messages -->
+        <div th:if="${successMsg}" class="alert alert-success">
+            <span>✅</span> <span th:text="${successMsg}"></span>
+        </div>
+        <div th:if="${errorMsg}" class="alert alert-error">
+            <span>❌</span> <span th:text="${errorMsg}"></span>
+        </div>
+
+        <!-- Page Body injected here -->
+        <div th:replace="${content} :: content"></div>
+    </main>
+</div>
+
+<style>
+@media(max-width:900px){#menuBtn{display:flex!important}}
+</style>
+
+<script>
+  // Auto-dismiss alerts after 4 seconds
+  setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(a => {
+      a.style.transition = 'opacity 0.5s';
+      a.style.opacity = '0';
+      setTimeout(() => a.remove(), 500);
+    });
+  }, 4000);
+</script>
+</body>
+</html>
