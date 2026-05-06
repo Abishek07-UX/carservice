@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Add Car | AutoTrack</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<aside class="sidebar" id="sidebar">
+    <a class="sidebar-brand" th:href="@{/dashboard}">
+        <div class="brand-icon">🚗</div>
+        <div><div class="brand-name">AutoTrack</div><div class="brand-sub">Car Management</div></div>
+    </a>
+    <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a th:href="@{/dashboard}" class="nav-link"><span class="nav-icon">📊</span> Dashboard</a>
+        <a th:href="@{/cars}" class="nav-link"><span class="nav-icon">🚘</span> All Cars</a>
+        <a th:href="@{/cars/add}" class="nav-link active"><span class="nav-icon">➕</span> Add Car</a>
+        <div class="nav-section-label">Reports</div>
+        <a th:href="@{/reports}" class="nav-link"><span class="nav-icon">📈</span> Analytics</a>
+        <div class="nav-section-label">System</div>
+        <a href="/h2-console" target="_blank" class="nav-link"><span class="nav-icon">🗄️</span> Database</a>
+    </nav>
+    <div class="sidebar-footer"><p>AutoTrack v1.0 &copy; 2025</p></div>
+</aside>
+<div class="main-content">
+    <header class="topbar">
+        <div class="flex items-center gap-12">
+            <button onclick="document.getElementById('sidebar').classList.toggle('open')"
+                    class="btn btn-secondary btn-icon" style="display:none" id="menuBtn">☰</button>
+            <h1 class="topbar-title">Register New Car</h1>
+        </div>
+        <div class="topbar-actions">
+            <a th:href="@{/cars}" class="btn btn-secondary">← Back to List</a>
+        </div>
+    </header>
+    <main class="page-content">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">🚗 Car Registration Form</span>
+                <span class="text-muted text-sm">Car ID will be auto-generated</span>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/cars/add}" method="post" th:object="${car}" id="addCarForm">
+                    <h3 style="color:var(--accent);font-size:14px;font-weight:600;margin-bottom:16px;text-transform:uppercase;letter-spacing:0.5px">
+                        👤 Owner Details
+                    </h3>
+                    <div class="form-grid" style="margin-bottom:24px">
+                        <div class="form-group">
+                            <label>Owner Name <span class="required">*</span></label>
+                            <input type="text" th:field="*{ownerName}" class="form-control"
+                                   placeholder="e.g. John Smith" id="ownerName"/>
+                            <span class="form-error" th:if="${#fields.hasErrors('ownerName')}"
+                                  th:errors="*{ownerName}"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Number <span class="required">*</span></label>
+                            <input type="text" th:field="*{contactNumber}" class="form-control"
+                                   placeholder="e.g. +1-555-0123" id="contactNumber"/>
+                            <span class="form-error" th:if="${#fields.hasErrors('contactNumber')}"
+                                  th:errors="*{contactNumber}"></span>
+                        </div>
+                    </div>
+
+                    <hr class="divider"/>
+                    <h3 style="color:var(--accent);font-size:14px;font-weight:600;margin-bottom:16px;text-transform:uppercase;letter-spacing:0.5px">
+                        🚗 Vehicle Details
+                    </h3>
+                    <div class="form-grid" style="margin-bottom:24px">
+                        <div class="form-group">
+                            <label>Vehicle / Plate Number <span class="required">*</span></label>
+                            <input type="text" th:field="*{vehicleNumber}" class="form-control"
+                                   placeholder="e.g. ABC-1234" id="vehicleNumber" style="text-transform:uppercase"/>
+                            <span class="form-error" th:if="${#fields.hasErrors('vehicleNumber')}"
+                                  th:errors="*{vehicleNumber}"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Brand <span class="required">*</span></label>
+                            <select th:field="*{brand}" class="form-control" id="brand">
+                                <option value="">Select Brand</option>
+                                <option value="Toyota">Toyota</option>
+                                <option value="Honda">Honda</option>
+                                <option value="Ford">Ford</option>
+                                <option value="BMW">BMW</option>
+                                <option value="Mercedes">Mercedes</option>
+                                <option value="Audi">Audi</option>
+                                <option value="Nissan">Nissan</option>
+                                <option value="Hyundai">Hyundai</option>
+                                <option value="Kia">Kia</option>
+                                <option value="Volkswagen">Volkswagen</option>
+                                <option value="Chevrolet">Chevrolet</option>
+                                <option value="Suzuki">Suzuki</option>
+                                <option value="Mitsubishi">Mitsubishi</option>
+                                <option value="Tesla">Tesla</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span class="form-error" th:if="${#fields.hasErrors('brand')}"
+                                  th:errors="*{brand}"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Model <span class="required">*</span></label>
+                            <input type="text" th:field="*{model}" class="form-control"
+                                   placeholder="e.g. Corolla" id="model"/>
+                            <span class="form-error" th:if="${#fields.hasErrors('model')}"
+                                  th:errors="*{model}"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Year of Manufacture <span class="required">*</span></label>
+                            <input type="number" th:field="*{yearOfManufacture}" class="form-control"
+                                   placeholder="e.g. 2020" min="1900" max="2100" id="year"/>
+                            <span class="form-error" th:if="${#fields.hasErrors('yearOfManufacture')}"
+                                  th:errors="*{yearOfManufacture}"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Fuel Type <span class="required">*</span></label>
+                            <select th:field="*{fuelType}" class="form-control" id="fuelType">
+                                <option value="">Select Fuel Type</option>
+                                <option value="Petrol">Petrol</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Electric">Electric</option>
+                                <option value="Hybrid">Hybrid</option>
+                            </select>
+                            <span class="form-error" th:if="${#fields.hasErrors('fuelType')}"
+                                  th:errors="*{fuelType}"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Transmission <span class="required">*</span></label>
+                            <select th:field="*{transmission}" class="form-control" id="transmission">
+                                <option value="">Select Transmission</option>
+                                <option value="Manual">Manual</option>
+                                <option value="Automatic">Automatic</option>
+                            </select>
+                            <span class="form-error" th:if="${#fields.hasErrors('transmission')}"
+                                  th:errors="*{transmission}"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Color</label>
+                            <input type="text" th:field="*{color}" class="form-control"
+                                   placeholder="e.g. Pearl White" id="color"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Current Mileage (km)</label>
+                            <input type="number" th:field="*{mileage}" class="form-control"
+                                   placeholder="e.g. 45000" min="0" step="1" id="mileage"/>
+                            <span class="form-error" th:if="${#fields.hasErrors('mileage')}"
+                                  th:errors="*{mileage}"></span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-12">
+                        <a th:href="@{/cars}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary" id="submitCar">
+                            🚗 Register Car
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+<style>@media(max-width:900px){#menuBtn{display:flex!important}}</style>
+</body>
+</html>

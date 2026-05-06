@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${car.brand + ' ' + car.model + ' | AutoTrack'}">Car Detail | AutoTrack</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<aside class="sidebar" id="sidebar">
+    <a class="sidebar-brand" th:href="@{/dashboard}">
+        <div class="brand-icon">🚗</div>
+        <div><div class="brand-name">AutoTrack</div><div class="brand-sub">Car Management</div></div>
+    </a>
+    <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a th:href="@{/dashboard}" class="nav-link"><span class="nav-icon">📊</span> Dashboard</a>
+        <a th:href="@{/cars}" class="nav-link active"><span class="nav-icon">🚘</span> All Cars</a>
+        <a th:href="@{/cars/add}" class="nav-link"><span class="nav-icon">➕</span> Add Car</a>
+        <div class="nav-section-label">Reports</div>
+        <a th:href="@{/reports}" class="nav-link"><span class="nav-icon">📈</span> Analytics</a>
+        <div class="nav-section-label">System</div>
+        <a href="/h2-console" target="_blank" class="nav-link"><span class="nav-icon">🗄️</span> Database</a>
+    </nav>
+    <div class="sidebar-footer"><p>AutoTrack v1.0 &copy; 2025</p></div>
+</aside>
+<div class="main-content">
+    <header class="topbar">
+        <div class="flex items-center gap-12">
+            <button onclick="document.getElementById('sidebar').classList.toggle('open')"
+                    class="btn btn-secondary btn-icon" style="display:none" id="menuBtn">☰</button>
+            <h1 class="topbar-title" th:text="${car.vehicleNumber}">Vehicle</h1>
+        </div>
+        <div class="topbar-actions">
+            <a th:href="@{/cars}" class="btn btn-secondary">← Back</a>
+            <a th:href="@{/cars/{id}/edit(id=${car.id})}" class="btn btn-primary" id="editCarBtn">✏️ Edit</a>
+        </div>
+    </header>
+    <main class="page-content">
+        <div th:if="${successMsg}" class="alert alert-success"><span>✅</span><span th:text="${successMsg}"></span></div>
+        <div th:if="${errorMsg}"   class="alert alert-error"><span>❌</span><span th:text="${errorMsg}"></span></div>
+
+        <!-- Car Profile Header -->
+        <div class="car-profile-header">
+            <div class="car-avatar">🚗</div>
+            <div style="flex:1">
+                <h1 style="font-size:22px;font-weight:700" th:text="${car.brand + ' ' + car.model}"></h1>
+                <div style="color:var(--text-secondary);font-size:14px;margin-top:2px">
+                    <span th:text="${car.yearOfManufacture}"></span> &bull;
+                    <span th:text="${car.color ?: 'N/A'}"></span>
+                </div>
+                <div class="car-meta">
+                    <span class="car-meta-item">🪪 <span th:text="${car.carId}"></span></span>
+                    <span class="car-meta-item">🔖 <span th:text="${car.vehicleNumber}"></span></span>
+                    <span class="car-meta-item badge"
+                          th:classappend="${'badge-' + #strings.toLowerCase(car.fuelType)}"
+                          th:text="${car.fuelType}"></span>
+                    <span class="car-meta-item">⚙️ <span th:text="${car.transmission}"></span></span>
+                    <span class="car-meta-item">📏 <span th:text="${car.mileage != null ? #numbers.formatDecimal(car.mileage,1,0) + ' km' : 'N/A'}"></span></span>
+                </div>
+            </div>
+            <!-- Cost Summary -->
+            <div style="text-align:right;flex-shrink:0">
+                <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Total Spent</div>
+                <div style="font-size:28px;font-weight:700;color:var(--accent)"
+                     th:text="'$' + ${#numbers.formatDecimal(totalServiceCost + totalRepairCost,1,2)}"></div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:4px">
+                    Service: $<span th:text="${#numbers.formatDecimal(totalServiceCost,1,2)}"></span> +
+                    Repair: $<span th:text="${#numbers.formatDecimal(totalRepairCost,1,2)}"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Owner Info + Spec Cards -->
+        <div class="grid-2" style="margin-bottom:24px">
+            <div class="card">
+                <div class="card-header"><span class="card-title">👤 Owner Information</span></div>
+                <div class="card-body">
+                    <table style="width:100%">
+                        <tr><td class="text-muted text-sm" style="padding:6px 0;width:140px">Owner Name</td>
+                            <td class="fw-600" th:text="${car.ownerName}"></td></tr>
+                        <tr><td class="text-muted text-sm" style="padding:6px 0">Contact</td>
+                            <td th:text="${car.contactNumber}"></td></tr>
+                        <tr><td class="text-muted text-sm" style="padding:6px 0">Last Service</td>
+                            <td th:text="${car.lastServiceDate ?: 'Never'}"></td></tr>
+                        <tr><td class="text-muted text-sm" style="padding:6px 0">Registered</td>
+                            <td th:text="${#temporals.format(car.createdAt,'dd MMM yyyy')}"></td></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span class="card-title">🔩 Vehicle Specifications</span></div>
+                <div class="card-body">
+                    <table style="width:100%">
+                        <tr><td class="text-muted text-sm" style="padding:6px 0;width:140px">Brand</td>
+                            <td class="fw-600" th:text="${car.brand}"></td></tr>
+                        <tr><td class="text-muted text-sm" style="padding:6px 0">Model</td>
+                            <td th:text="${car.model}"></td></tr>
+                        <tr><td class="text-muted text-sm" style="padding:6px 0">Year</td>
+                            <td th:text="${car.yearOfManufacture}"></td></tr>
+                        <tr><td class="text-muted text-sm" style="padding:6px 0">Color</td>
+                            <td th:text="${car.color ?: 'N/A'}"></td></tr>
+                        <tr><td class="text-muted text-sm" style="padding:6px 0">Mileage</td>
+                            <td th:text="${car.mileage != null ? #numbers.formatDecimal(car.mileage,1,0) + ' km' : 'N/A'}"></td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ SERVICE HISTORY ═══ -->
+        <div class="card" style="margin-bottom:24px">
+            <div class="card-header">
+                <span class="card-title">🔧 Service History</span>
+                <a th:href="@{/cars/{id}/services/add(id=${car.id})}" class="btn btn-primary btn-sm" id="addServiceBtn">+ Add Service</a>
+            </div>
+            <div th:if="${#lists.isEmpty(services)}" class="empty-state" style="padding:40px">
+                <div class="empty-state-icon">🔧</div>
+                <p>No service records yet.</p>
+            </div>
+            <div class="table-wrapper" th:unless="${#lists.isEmpty(services)}" style="border:none">
+                <table>
+                    <thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Cost</th><th>Garage</th><th>Technician</th><th></th></tr></thead>
+                    <tbody>
+                        <tr th:each="svc : ${services}">
+                            <td th:text="${svc.serviceDate}"></td>
+                            <td><span class="badge badge-progress" th:text="${svc.serviceType}"></span></td>
+                            <td class="text-sm text-muted truncate" style="max-width:200px" th:text="${svc.description ?: '-'}"></td>
+                            <td class="text-accent fw-600" th:text="${svc.cost != null ? '$' + #numbers.formatDecimal(svc.cost,1,2) : '-'}"></td>
+                            <td th:text="${svc.garageName ?: '-'}"></td>
+                            <td th:text="${svc.technicianName ?: '-'}"></td>
+                            <td>
+                                <form th:action="@{/cars/{cid}/services/{sid}/delete(cid=${car.id},sid=${svc.id})}"
+                                      method="post" onsubmit="return confirm('Delete this service record?')">
+                                    <button type="submit" class="btn btn-danger btn-sm btn-icon" title="Delete">🗑</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ═══ REPAIRS ═══ -->
+        <div class="card" style="margin-bottom:24px">
+            <div class="card-header">
+                <span class="card-title">🛠️ Repairs &amp; Issues</span>
+                <a th:href="@{/cars/{id}/repairs/add(id=${car.id})}" class="btn btn-primary btn-sm" id="addRepairBtn">+ Log Issue</a>
+            </div>
+            <div th:if="${#lists.isEmpty(repairs)}" class="empty-state" style="padding:40px">
+                <div class="empty-state-icon">✅</div>
+                <p>No repair issues logged.</p>
+            </div>
+            <div class="table-wrapper" th:unless="${#lists.isEmpty(repairs)}" style="border:none">
+                <table>
+                    <thead><tr><th>Reported</th><th>Problem</th><th>Status</th><th>Cost</th><th>Technician</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        <tr th:each="rep : ${repairs}">
+                            <td th:text="${rep.reportedDate}"></td>
+                            <td class="text-sm truncate" style="max-width:220px" th:text="${rep.problemDescription}"></td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${rep.status == 'Completed' ? 'badge-completed' : rep.status == 'In Progress' ? 'badge-progress' : 'badge-pending'}"
+                                      th:text="${rep.status}"></span>
+                            </td>
+                            <td class="text-red fw-600" th:text="${rep.repairCost != null ? '$' + #numbers.formatDecimal(rep.repairCost,1,2) : '-'}"></td>
+                            <td th:text="${rep.technicianName ?: '-'}"></td>
+                            <td>
+                                <div class="flex gap-8">
+                                    <a th:href="@{/cars/{cid}/repairs/{rid}/edit(cid=${car.id},rid=${rep.id})}"
+                                       class="btn btn-secondary btn-sm" title="Edit">✏️</a>
+                                    <form th:action="@{/cars/{cid}/repairs/{rid}/delete(cid=${car.id},rid=${rep.id})}"
+                                          method="post" onsubmit="return confirm('Delete this repair record?')">
+                                        <button type="submit" class="btn btn-danger btn-sm btn-icon" title="Delete">🗑</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ═══ ALERTS ═══ -->
+        <div class="card" style="margin-bottom:24px">
+            <div class="card-header">
+                <span class="card-title">🔔 Maintenance Alerts</span>
+                <a th:href="@{/cars/{id}/alerts/add(id=${car.id})}" class="btn btn-primary btn-sm" id="addAlertBtn">+ Set Reminder</a>
+            </div>
+            <div class="card-body">
+                <div th:if="${#lists.isEmpty(alerts)}" class="empty-state" style="padding:20px">
+                    <div class="empty-state-icon">🔔</div>
+                    <p>No maintenance alerts set.</p>
+                </div>
+                <div th:each="alert : ${alerts}" class="alert-card warning" style="margin-bottom:8px">
+                    <span class="alert-card-icon">⚠️</span>
+                    <div class="alert-card-content">
+                        <div class="alert-card-title" th:text="${alert.alertType}"></div>
+                        <div class="alert-card-meta">
+                            <span th:text="${alert.message}"></span>
+                            <span th:if="${alert.dueDateAlert != null}" th:text="' · Due: ' + ${alert.dueDateAlert}"></span>
+                            <span th:if="${alert.dueMileageAlert != null}" th:text="' · At: ' + ${alert.dueMileageAlert} + ' km'"></span>
+                        </div>
+                    </div>
+                    <div class="flex gap-8">
+                        <form th:action="@{/cars/{cid}/alerts/{aid}/dismiss(cid=${car.id},aid=${alert.id})}" method="post">
+                            <button type="submit" class="btn btn-success btn-sm">✔ Dismiss</button>
+                        </form>
+                        <form th:action="@{/cars/{cid}/alerts/{aid}/delete(cid=${car.id},aid=${alert.id})}" method="post">
+                            <button type="submit" class="btn btn-danger btn-sm btn-icon">🗑</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ DOCUMENTS ═══ -->
+        <div class="card" style="margin-bottom:24px">
+            <div class="card-header">
+                <span class="card-title">📁 Documents</span>
+            </div>
+            <div class="card-body">
+                <!-- Upload Form -->
+                <form th:action="@{/cars/{id}/documents/upload(id=${car.id})}"
+                      method="post" enctype="multipart/form-data"
+                      class="flex flex-wrap gap-12 items-center" style="margin-bottom:20px" id="uploadForm">
+                    <select name="documentType" class="form-control" style="width:auto;min-width:160px" id="docType">
+                        <option value="Insurance">Insurance</option>
+                        <option value="Registration">Registration</option>
+                        <option value="Invoice">Service Invoice</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <input type="file" name="file" class="form-control" style="width:auto" id="fileInput"
+                           accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"/>
+                    <button type="submit" class="btn btn-primary" id="uploadBtn">📤 Upload</button>
+                </form>
+
+                <div th:if="${#lists.isEmpty(documents)}" class="empty-state" style="padding:20px">
+                    <div class="empty-state-icon">📂</div>
+                    <p>No documents uploaded yet.</p>
+                </div>
+                <div class="grid-auto">
+                    <div th:each="doc : ${documents}" class="doc-card">
+                        <div class="doc-icon"
+                             th:text="${doc.contentType != null and #strings.contains(doc.contentType,'pdf') ? '📄' : (doc.contentType != null and #strings.contains(doc.contentType,'image') ? '🖼️' : '📎')}"></div>
+                        <div style="flex:1;min-width:0">
+                            <div class="doc-name" th:text="${doc.originalFileName}"></div>
+                            <div class="doc-meta">
+                                <span th:text="${doc.documentType}"></span> &bull;
+                                <span th:text="${#numbers.formatDecimal(doc.fileSize/1024.0,1,1) + ' KB'}"></span>
+                            </div>
+                        </div>
+                        <div class="doc-actions">
+                            <a th:href="@{/cars/{cid}/documents/{did}/download(cid=${car.id},did=${doc.id})}"
+                               class="btn btn-info btn-sm" title="Download">⬇</a>
+                            <form th:action="@{/cars/{cid}/documents/{did}/delete(cid=${car.id},did=${doc.id})}"
+                                  method="post" onsubmit="return confirm('Delete this document?')">
+                                <button type="submit" class="btn btn-danger btn-sm btn-icon" title="Delete">🗑</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="card" style="border-color:rgba(248,81,73,0.3)">
+            <div class="card-header" style="border-color:rgba(248,81,73,0.3)">
+                <span class="card-title text-red">⚠️ Danger Zone</span>
+            </div>
+            <div class="card-body">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="fw-600" style="margin-bottom:4px">Delete this car</div>
+                        <div class="text-sm text-muted">All service, repair, alert, and document records will be permanently deleted.</div>
+                    </div>
+                    <form th:action="@{/cars/{id}/delete(id=${car.id})}" method="post"
+                          onsubmit="return confirm('Are you sure? This will permanently delete this car and ALL its records. This cannot be undone.')">
+                        <button type="submit" class="btn btn-danger" id="deleteCarBtn">🗑 Delete Car</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<style>@media(max-width:900px){#menuBtn{display:flex!important}}</style>
+<script>
+setTimeout(()=>{document.querySelectorAll('.alert').forEach(a=>{a.style.transition='opacity 0.5s';a.style.opacity='0';setTimeout(()=>a.remove(),500);});},4000);
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Edit Repair | AutoTrack</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<aside class="sidebar" id="sidebar">
+    <a class="sidebar-brand" th:href="@{/dashboard}">
+        <div class="brand-icon">🚗</div>
+        <div><div class="brand-name">AutoTrack</div><div class="brand-sub">Car Management</div></div>
+    </a>
+    <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a th:href="@{/dashboard}" class="nav-link"><span class="nav-icon">📊</span> Dashboard</a>
+        <a th:href="@{/cars}" class="nav-link active"><span class="nav-icon">🚘</span> All Cars</a>
+        <div class="nav-section-label">Reports</div>
+        <a th:href="@{/reports}" class="nav-link"><span class="nav-icon">📈</span> Analytics</a>
+    </nav>
+    <div class="sidebar-footer"><p>AutoTrack v1.0 &copy; 2025</p></div>
+</aside>
+<div class="main-content">
+    <header class="topbar">
+        <div class="flex items-center gap-12">
+            <button onclick="document.getElementById('sidebar').classList.toggle('open')"
+                    class="btn btn-secondary btn-icon" style="display:none" id="menuBtn">☰</button>
+            <h1 class="topbar-title">Edit Repair Record</h1>
+        </div>
+        <div class="topbar-actions">
+            <a th:href="@{/cars/{id}(id=${carId})}" class="btn btn-secondary">← Back to Car</a>
+        </div>
+    </header>
+    <main class="page-content">
+        <div class="card">
+            <div class="card-header"><span class="card-title">✏️ Update Repair Record</span></div>
+            <div class="card-body">
+                <form th:action="@{/cars/{cid}/repairs/{rid}/edit(cid=${carId},rid=${repairRecord.id})}"
+                      method="post" th:object="${repairRecord}" id="editRepairForm">
+                    <div class="form-grid">
+                        <div class="form-group" style="grid-column:1/-1">
+                            <label>Problem Description <span class="required">*</span></label>
+                            <textarea th:field="*{problemDescription}" class="form-control" id="problemDesc"></textarea>
+                            <span class="form-error" th:if="${#fields.hasErrors('problemDescription')}" th:errors="*{problemDescription}"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Status <span class="required">*</span></label>
+                            <select th:field="*{status}" class="form-control" id="status">
+                                <option value="Pending">Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Repair Cost ($)</label>
+                            <input type="number" th:field="*{repairCost}" class="form-control" min="0" step="0.01" id="repairCost"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Technician Name</label>
+                            <input type="text" th:field="*{technicianName}" class="form-control" id="techName"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Resolved Date</label>
+                            <input type="date" th:field="*{resolvedDate}" class="form-control" id="resolvedDate"/>
+                        </div>
+                        <div class="form-group" style="grid-column:1/-1">
+                            <label>Notes</label>
+                            <textarea th:field="*{notes}" class="form-control" id="notes"></textarea>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-12" style="margin-top:20px">
+                        <a th:href="@{/cars/{id}(id=${carId})}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary" id="updateRepair">💾 Update Repair</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+<style>@media(max-width:900px){#menuBtn{display:flex!important}}</style>
+</body>
+</html>

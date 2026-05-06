@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Add Service Record | AutoTrack</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<aside class="sidebar" id="sidebar">
+    <a class="sidebar-brand" th:href="@{/dashboard}">
+        <div class="brand-icon">🚗</div>
+        <div><div class="brand-name">AutoTrack</div><div class="brand-sub">Car Management</div></div>
+    </a>
+    <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a th:href="@{/dashboard}" class="nav-link"><span class="nav-icon">📊</span> Dashboard</a>
+        <a th:href="@{/cars}" class="nav-link active"><span class="nav-icon">🚘</span> All Cars</a>
+        <a th:href="@{/cars/add}" class="nav-link"><span class="nav-icon">➕</span> Add Car</a>
+        <div class="nav-section-label">Reports</div>
+        <a th:href="@{/reports}" class="nav-link"><span class="nav-icon">📈</span> Analytics</a>
+    </nav>
+    <div class="sidebar-footer"><p>AutoTrack v1.0 &copy; 2025</p></div>
+</aside>
+<div class="main-content">
+    <header class="topbar">
+        <div class="flex items-center gap-12">
+            <button onclick="document.getElementById('sidebar').classList.toggle('open')"
+                    class="btn btn-secondary btn-icon" style="display:none" id="menuBtn">☰</button>
+            <h1 class="topbar-title">Add Service Record</h1>
+        </div>
+        <div class="topbar-actions">
+            <a th:href="@{/cars/{id}(id=${carId})}" class="btn btn-secondary">← Back to Car</a>
+        </div>
+    </header>
+    <main class="page-content">
+        <div class="card">
+            <div class="card-header"><span class="card-title">🔧 New Service Record</span></div>
+            <div class="card-body">
+                <form th:action="@{/cars/{id}/services/add(id=${carId})}" method="post"
+                      th:object="${serviceRecord}" id="addServiceForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Service Date <span class="required">*</span></label>
+                            <input type="date" th:field="*{serviceDate}" class="form-control" id="serviceDate"/>
+                            <span class="form-error" th:if="${#fields.hasErrors('serviceDate')}" th:errors="*{serviceDate}"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Service Type <span class="required">*</span></label>
+                            <select th:field="*{serviceType}" class="form-control" id="serviceType">
+                                <option value="">Select Type</option>
+                                <option value="Oil Change">Oil Change</option>
+                                <option value="Full Service">Full Service</option>
+                                <option value="Tyre Rotation">Tyre Rotation</option>
+                                <option value="Brake Service">Brake Service</option>
+                                <option value="Air Filter">Air Filter</option>
+                                <option value="Battery Check">Battery Check</option>
+                                <option value="Wheel Alignment">Wheel Alignment</option>
+                                <option value="Transmission Service">Transmission Service</option>
+                                <option value="AC Service">AC Service</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span class="form-error" th:if="${#fields.hasErrors('serviceType')}" th:errors="*{serviceType}"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Cost ($)</label>
+                            <input type="number" th:field="*{cost}" class="form-control"
+                                   placeholder="0.00" min="0" step="0.01" id="cost"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Mileage at Service (km)</label>
+                            <input type="number" th:field="*{mileageAtService}" class="form-control"
+                                   placeholder="e.g. 45000" min="0" id="mileageAtService"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Garage Name</label>
+                            <input type="text" th:field="*{garageName}" class="form-control"
+                                   placeholder="e.g. AutoFix Garage" id="garageName"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Technician Name</label>
+                            <input type="text" th:field="*{technicianName}" class="form-control"
+                                   placeholder="e.g. Mike Johnson" id="technicianName"/>
+                        </div>
+                        <div class="form-group" style="grid-column:1/-1">
+                            <label>Description / Notes</label>
+                            <textarea th:field="*{description}" class="form-control"
+                                      placeholder="Details about the service performed..." id="description"></textarea>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-12" style="margin-top:20px">
+                        <a th:href="@{/cars/{id}(id=${carId})}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary" id="saveService">🔧 Save Service Record</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+<style>@media(max-width:900px){#menuBtn{display:flex!important}}</style>
+</body>
+</html>
