@@ -40,18 +40,24 @@ Before you start, make sure you have these "Big Three" installed:
 
 ## 4. Connecting Your Database to the Code
 
-Now we need to tell the code your MySQL password.
+You have two ways to set your MySQL password. **DO NOT** change `application.properties` directly, or your password might accidentally be pushed to GitHub!
 
-1.  In IntelliJ, go to the left sidebar (Project view).
-2.  Navigate to: `src` -> `main` -> `resources` -> `application.properties`.
-3.  Find these lines and change them to match your MySQL setup:
+### Option A: Using a `.env` file (Recommended)
+1.  In the project root, find the file named `.env.example`.
+2.  Duplicate it and rename the copy to just `.env`.
+3.  Open `.env` and put your password there:
     ```properties
-    # Change 'root' if your username is different
-    spring.datasource.username=root 
-    
-    # Change '1234' to the password you set during MySQL installation
-    spring.datasource.password=your_mysql_password 
+    DB_PASSWORD=your_actual_password
     ```
+    *The `.env` file is hidden from GitHub, so your password stays safe on your machine.*
+
+### Option B: Using IntelliJ Settings
+1.  In IntelliJ, click on the **Run Configuration** dropdown (near the Play button) and select **Edit Configurations...**.
+2.  Find **Environment variables** and click the folder icon.
+3.  Add a new variable:
+    *   **Name:** `DB_PASSWORD`
+    *   **Value:** `your_actual_password`
+4.  Click **OK**.
 
 ---
 
