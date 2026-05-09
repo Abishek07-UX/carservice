@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoCare — My Garage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:       #0a0f1e;
+            --surface:  rgba(255,255,255,0.05);
+            --border:   rgba(255,255,255,0.10);
+            --purple:   #8b5cf6;
+            --purple-d: #7c3aed;
+            --orange:   #f97316;
+            --green:    #22c55e;
+            --red:      #ef4444;
+            --blue:     #3b82f6;
+            --text:     #f1f5f9;
+            --muted:    #94a3b8;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── NAVBAR ── */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(10,15,30,0.85);
+        }
+        .brand { font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
+        .brand i { color: var(--orange); }
+        .brand span { background: linear-gradient(135deg, var(--purple), var(--orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* ── HERO ── */
+        .hero {
+            background: linear-gradient(135deg, #1e1050 0%, #0a0f1e 40%, #1a0a2e 100%);
+            padding: 3.5rem 2rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at 30% 50%, rgba(139,92,246,0.15) 0%, transparent 60%),
+                        radial-gradient(ellipse at 70% 50%, rgba(249,115,22,0.10) 0%, transparent 60%);
+        }
+        .hero h1 { font-size: 2.8rem; font-weight: 800; position: relative; }
+        .hero h1 span { background: linear-gradient(135deg, var(--purple), var(--orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { color: var(--muted); margin-top: 0.5rem; font-size: 1rem; position: relative; }
+
+        /* ── STATS BAR ── */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            position: relative;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            min-width: 120px;
+        }
+        .stat-card .num { font-size: 2rem; font-weight: 800; }
+        .stat-card .lbl { font-size: 0.75rem; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .stat-card.purple .num { color: var(--purple); }
+        .stat-card.orange .num { color: var(--orange); }
+        .stat-card.red    .num { color: var(--red); }
+
+        /* ── ALERT BANNER ── */
+        .alert-banner {
+            margin: 1.5rem 2rem;
+            background: rgba(249,115,22,0.10);
+            border: 1px solid rgba(249,115,22,0.30);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            animation: fadeIn 0.4s ease;
+        }
+        .alert-banner i { color: var(--orange); margin-top: 2px; flex-shrink: 0; }
+        .alert-banner h6 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.25rem; color: var(--orange); }
+        .alert-banner ul { padding-left: 1rem; font-size: 0.85rem; color: var(--muted); }
+        .alert-banner a { color: var(--orange); text-decoration: none; font-weight: 600; }
+        .alert-banner a:hover { text-decoration: underline; }
+
+        /* ── MAIN CONTENT ── */
+        .main { max-width: 1200px; margin: 0 auto; padding: 1.5rem 2rem 3rem; }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .section-header h2 { font-size: 1.3rem; font-weight: 700; }
+        .section-header h2 span { color: var(--muted); font-weight: 400; font-size: 0.95rem; margin-left: 0.5rem; }
+
+        /* ── CAR GRID ── */
+        .car-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+
+        .car-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            animation: fadeUp 0.4s ease both;
+        }
+        .car-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--purple);
+            box-shadow: 0 8px 30px rgba(139,92,246,0.15);
+        }
+        .car-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+        .car-icon-wrap {
+            width: 52px; height: 52px; border-radius: 12px;
+            background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(249,115,22,0.15));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; color: var(--purple);
+        }
+        .year-badge {
+            background: rgba(249,115,22,0.15);
+            color: var(--orange);
+            font-size: 0.75rem; font-weight: 700;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            border: 1px solid rgba(249,115,22,0.3);
+        }
+        .car-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .car-reg { font-size: 0.8rem; color: var(--muted); display: flex; align-items: center; gap: 0.3rem; }
+        .car-reg i { color: var(--orange); font-size: 0.7rem; }
+
+        .task-count {
+            margin: 0.75rem 0;
+            background: rgba(139,92,246,0.08);
+            border: 1px solid rgba(139,92,246,0.15);
+            border-radius: 8px;
+            padding: 0.4rem 0.75rem;
+            font-size: 0.8rem; color: var(--muted);
+            display: flex; align-items: center; gap: 0.4rem;
+        }
+        .task-count i { color: var(--purple); }
+
+        .car-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+
+        /* ── BUTTONS ── */
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.82rem;
+            font-weight: 600; cursor: pointer; transition: all 0.2s;
+            border: none; text-decoration: none; font-family: inherit;
+        }
+        .btn-primary { background: var(--purple); color: #fff; }
+        .btn-primary:hover { background: var(--purple-d); color: #fff; transform: translateY(-1px); }
+        .btn-outline { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+        .btn-outline:hover { border-color: var(--purple); color: var(--text); }
+        .btn-danger { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
+        .btn-danger:hover { background: var(--red); color: #fff; }
+        .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.78rem; }
+
+        /* ── EMPTY STATE ── */
+        .empty {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--muted);
+        }
+        .empty i { font-size: 3rem; opacity: 0.25; margin-bottom: 1rem; display: block; }
+        .empty h3 { font-size: 1rem; font-weight: 500; margin-bottom: 1rem; }
+
+        /* ── ANIMATIONS ── */
+        @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeUp  { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <div class="brand">
+        <i class="fa-solid fa-car-wrench"></i>
+        <span>AutoCare</span>
+    </div>
+    <a href="/car/new" class="btn btn-primary" id="add-car-btn">
+        <i class="fa-solid fa-plus"></i> Add New Car
+    </a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <h1>Your <span>Garage</span></h1>
+    <p>Manage your vehicles and service reminders in one place</p>
+
+    <div class="stats-bar">
+        <div class="stat-card purple">
+            <div class="num" th:text="${#lists.size(cars)}">0</div>
+            <div class="lbl">Total Cars</div>
+        </div>
+        <div class="stat-card orange">
+            <div class="num" th:text="${#lists.size(upcomingTasks)}">0</div>
+            <div class="lbl">Pending Tasks</div>
+        </div>
+        <div class="stat-card red">
+            <div class="num" th:text="${#lists.size(upcomingTasks.?[overdue])}">0</div>
+            <div class="lbl">Overdue</div>
+        </div>
+    </div>
+</div>
+
+<!-- NOTIFICATION BANNER -->
+<div th:if="${not #lists.isEmpty(upcomingTasks)}" class="alert-banner">
+    <i class="fa-solid fa-bell fa-lg"></i>
+    <div>
+        <h6>Upcoming Service Reminders</h6>
+        <ul>
+            <li th:each="task : ${upcomingTasks}">
+                <strong th:text="${task.car.displayName}">Car</strong> —
+                <span th:text="${task.taskName}">Task</span>
+                (Due: <strong th:text="${#temporals.format(task.dueDate, 'MMM dd, yyyy')}">Date</strong>)
+                <a th:href="@{'/car/' + ${task.car.id}}">View →</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+    <div class="section-header">
+        <h2>My Vehicles <span th:text="'(' + ${#lists.size(cars)} + ' registered)'"></span></h2>
+    </div>
+
+    <div class="car-grid">
+
+        <!-- EMPTY STATE -->
+        <div th:if="${#lists.isEmpty(cars)}" class="empty">
+            <i class="fa-solid fa-car-side"></i>
+            <h3>No cars in your garage yet.</h3>
+            <a href="/car/new" class="btn btn-primary">Add Your First Car</a>
+        </div>
+
+        <!-- CAR CARDS -->
+        <div th:each="car : ${cars}" class="car-card" id="'car-' + ${car.id}">
+            <div class="car-card-top">
+                <div class="car-icon-wrap"><i class="fa-solid fa-car"></i></div>
+                <span class="year-badge" th:text="${car.year}">Year</span>
+            </div>
+
+            <div class="car-name" th:text="${car.make + ' ' + car.model}">Make Model</div>
+            <div class="car-reg">
+                <i class="fa-solid fa-hashtag"></i>
+                <span th:text="${car.registrationNumber}">Reg</span>
+            </div>
+
+            <div class="task-count">
+                <i class="fa-solid fa-list-check"></i>
+                <span th:text="${car.serviceTasks.size() + ' service task(s)'}">0 tasks</span>
+            </div>
+
+            <div class="car-actions">
+                <a th:href="@{'/car/' + ${car.id}}" class="btn btn-primary" style="flex:1; justify-content:center;">
+                    <i class="fa-solid fa-eye"></i> View
+                </a>
+                <form th:action="@{'/car/' + ${car.id} + '/delete'}" method="post"
+                      onsubmit="return confirm('Delete this car and all its reminders?');">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

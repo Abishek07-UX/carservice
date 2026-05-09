@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'AutoCare — ' + ${car.displayName}">Car Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:       #0a0f1e;
+            --surface:  rgba(255,255,255,0.05);
+            --border:   rgba(255,255,255,0.10);
+            --purple:   #8b5cf6;
+            --purple-d: #7c3aed;
+            --orange:   #f97316;
+            --green:    #22c55e;
+            --red:      #ef4444;
+            --blue:     #3b82f6;
+            --yellow:   #eab308;
+            --text:     #f1f5f9;
+            --muted:    #94a3b8;
+        }
+
+        body { background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text); min-height: 100vh; }
+
+        /* ── NAVBAR ── */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(10,15,30,0.85);
+        }
+        .brand { font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+        .brand i { color: var(--orange); }
+        .brand span { background: linear-gradient(135deg, var(--purple), var(--orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* ── BUTTONS ── */
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.82rem;
+            font-weight: 600; cursor: pointer; transition: all 0.2s;
+            border: none; text-decoration: none; font-family: inherit;
+        }
+        .btn-primary   { background: var(--purple); color: #fff; }
+        .btn-primary:hover { background: var(--purple-d); color: #fff; transform: translateY(-1px); }
+        .btn-outline   { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+        .btn-outline:hover { border-color: var(--purple); color: var(--text); }
+        .btn-success   { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+        .btn-success:hover { background: var(--green); color: #fff; }
+        .btn-danger    { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
+        .btn-danger:hover { background: var(--red); color: #fff; }
+        .btn-sm { padding: 0.3rem 0.65rem; font-size: 0.78rem; }
+
+        /* ── MAIN ── */
+        .main { max-width: 1100px; margin: 2rem auto; padding: 0 2rem 3rem; display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; }
+
+        /* ── GLASS CARD ── */
+        .glass {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            padding: 1.5rem;
+        }
+
+        /* ── CAR PANEL ── */
+        .car-panel { text-align: center; }
+        .car-avatar {
+            width: 80px; height: 80px; border-radius: 20px; margin: 0 auto 1rem;
+            background: linear-gradient(135deg, rgba(139,92,246,0.25), rgba(249,115,22,0.15));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: var(--purple);
+        }
+        .car-panel h2 { font-size: 1.3rem; font-weight: 800; }
+        .car-panel .year { color: var(--muted); font-size: 0.85rem; margin-top: 0.25rem; }
+
+        .info-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.6rem 0; border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-row .lbl { color: var(--muted); display: flex; align-items: center; gap: 0.4rem; }
+        .info-row .val { font-weight: 600; }
+
+        .panel-footer { margin-top: 1.25rem; }
+
+        /* ── TASK SECTION ── */
+        .task-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.25rem; padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .task-header h3 { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+        .task-header h3 i { color: var(--orange); }
+
+        /* ── PROGRESS ── */
+        .progress-wrap { margin-bottom: 1.25rem; }
+        .progress-lbl { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.4rem; display: flex; justify-content: space-between; }
+        .progress-bar { height: 6px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--purple), var(--green)); border-radius: 999px; transition: width 0.5s ease; }
+
+        /* ── TASK ITEMS ── */
+        .task-item {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            margin-bottom: 0.65rem;
+            border-left: 4px solid transparent;
+            background: rgba(255,255,255,0.02);
+            transition: border-color 0.2s, background 0.2s;
+            animation: fadeUp 0.3s ease both;
+        }
+        .task-item:hover { background: rgba(255,255,255,0.04); }
+        .task-item.pending   { border-left-color: var(--orange); }
+        .task-item.completed { border-left-color: var(--green);  opacity: 0.65; }
+        .task-item.overdue   { border-left-color: var(--red);    background: rgba(239,68,68,0.05); }
+        .task-item.in-progress { border-left-color: var(--blue); }
+
+        .task-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+        .task-name { font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+        .task-desc { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+        .task-right { text-align: right; flex-shrink: 0; }
+        .task-actions { display: flex; gap: 0.4rem; margin-top: 0.5rem; justify-content: flex-end; }
+
+        /* ── STATUS BADGES ── */
+        .badge {
+            display: inline-flex; align-items: center; gap: 0.25rem;
+            font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.55rem;
+            border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        .badge-pending    { background: rgba(249,115,22,0.15); color: var(--orange); border: 1px solid rgba(249,115,22,0.3); }
+        .badge-completed  { background: rgba(34,197,94,0.15);  color: var(--green);  border: 1px solid rgba(34,197,94,0.3); }
+        .badge-overdue    { background: rgba(239,68,68,0.15);  color: var(--red);    border: 1px solid rgba(239,68,68,0.3); }
+        .badge-in-progress{ background: rgba(59,130,246,0.15); color: var(--blue);   border: 1px solid rgba(59,130,246,0.3); }
+
+        .due-date { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.4rem; }
+        .due-date i { color: var(--purple); margin-right: 0.2rem; }
+
+        /* ── EMPTY STATE ── */
+        .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); }
+        .empty i { font-size: 2.5rem; opacity: 0.25; margin-bottom: 0.75rem; display: block; }
+
+        /* ── ALERT BANNER ── */
+        .alert-banner {
+            margin: 1rem 2rem;
+            background: rgba(249,115,22,0.10);
+            border: 1px solid rgba(249,115,22,0.30);
+            border-radius: 12px;
+            padding: 0.9rem 1.25rem;
+            display: flex; align-items: flex-start; gap: 0.75rem;
+        }
+        .alert-banner i { color: var(--orange); margin-top: 2px; flex-shrink: 0; }
+        .alert-banner h6 { font-size: 0.85rem; font-weight: 700; color: var(--orange); margin-bottom: 0.2rem; }
+        .alert-banner ul { padding-left: 1rem; font-size: 0.82rem; color: var(--muted); }
+        .alert-banner a  { color: var(--orange); font-weight: 600; text-decoration: none; }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; z-index: 200;
+            background: rgba(0,0,0,0.65); backdrop-filter: blur(4px);
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #131929;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            width: 100%; max-width: 440px;
+            padding: 2rem;
+            animation: fadeUp 0.25s ease;
+        }
+        .modal-box h4 { font-size: 1rem; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+        .modal-box h4 i { color: var(--orange); }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.04em; }
+        input, select, textarea {
+            width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            color: var(--text); border-radius: 8px; padding: 0.6rem 0.85rem;
+            font-size: 0.88rem; font-family: inherit; transition: border-color 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none; border-color: var(--purple);
+            box-shadow: 0 0 0 3px rgba(139,92,246,0.15);
+        }
+        select option { background: #131929; }
+        textarea { resize: vertical; min-height: 70px; }
+        .modal-footer { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1.25rem; }
+
+        /* ── ANIMATIONS ── */
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <a href="/" class="brand">
+        <i class="fa-solid fa-car-wrench"></i>
+        <span>AutoCare</span>
+    </a>
+    <a href="/" class="btn btn-outline btn-sm"><i class="fa-solid fa-arrow-left"></i> Back to Garage</a>
+</nav>
+
+<!-- NOTIFICATION BANNER -->
+<div th:if="${not #lists.isEmpty(upcomingTasks)}" class="alert-banner">
+    <i class="fa-solid fa-bell"></i>
+    <div>
+        <h6>Upcoming Reminders</h6>
+        <ul>
+            <li th:each="task : ${upcomingTasks}">
+                <strong th:text="${task.car.displayName}">Car</strong> —
+                <span th:text="${task.taskName}">Task</span>
+                (Due: <strong th:text="${#temporals.format(task.dueDate, 'MMM dd, yyyy')}">Date</strong>)
+                <a th:href="@{'/car/' + ${task.car.id}}">View →</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="main">
+
+    <!-- ── CAR INFO PANEL ── -->
+    <div class="glass car-panel">
+        <div class="car-avatar"><i class="fa-solid fa-car-side"></i></div>
+        <h2 th:text="${car.make + ' ' + car.model}">Make Model</h2>
+        <div class="year" th:text="${car.year}">Year</div>
+
+        <div style="margin-top:1.25rem;">
+            <div class="info-row">
+                <span class="lbl"><i class="fa-solid fa-hashtag" style="color:var(--orange)"></i> Plate</span>
+                <span class="val" th:text="${car.registrationNumber}">Reg</span>
+            </div>
+            <div class="info-row">
+                <span class="lbl"><i class="fa-solid fa-list-check" style="color:var(--purple)"></i> Tasks</span>
+                <span class="val" th:text="${car.serviceTasks.size()}">0</span>
+            </div>
+            <div class="info-row">
+                <span class="lbl"><i class="fa-solid fa-circle-check" style="color:var(--green)"></i> Done</span>
+                <span class="val" th:text="${car.serviceTasks.?[completed].size()}">0</span>
+            </div>
+        </div>
+
+        <div class="panel-footer">
+            <form th:action="@{'/car/' + ${car.id} + '/delete'}" method="post"
+                  onsubmit="return confirm('Delete this car and all its reminders?');">
+                <button type="submit" class="btn btn-danger" style="width:100%; justify-content:center;">
+                    <i class="fa-solid fa-trash"></i> Delete Car
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ── SERVICE TASKS ── -->
+    <div class="glass">
+        <div class="task-header">
+            <h3><i class="fa-solid fa-clipboard-list"></i> Service Reminders</h3>
+            <button class="btn btn-primary btn-sm" onclick="openModal()">
+                <i class="fa-solid fa-plus"></i> Add Reminder
+            </button>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="progress-wrap" th:if="${car.serviceTasks.size() > 0}">
+            <div class="progress-lbl">
+                <span>Completion</span>
+                <span th:text="${car.serviceTasks.?[completed].size() + '/' + car.serviceTasks.size() + ' done'}">0/0</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill"
+                     th:style="'width:' + (${car.serviceTasks.size() > 0 ? car.serviceTasks.?[completed].size() * 100 / car.serviceTasks.size() : 0}) + '%'">
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty state -->
+        <div th:if="${#lists.isEmpty(car.serviceTasks)}" class="empty">
+            <i class="fa-regular fa-calendar-check"></i>
+            <p>No service reminders yet. Click <strong>Add Reminder</strong> to get started.</p>
+        </div>
+
+        <!-- Task list -->
+        <div th:each="task : ${car.serviceTasks}"
+             class="task-item"
+             th:classappend="${task.overdue ? 'overdue' : (task.completed ? 'completed' : (task.status.name() == 'IN_PROGRESS' ? 'in-progress' : 'pending'))}">
+
+            <div class="task-row">
+                <div>
+                    <div class="task-name">
+                        <span th:text="${task.taskName}">Task</span>
+                        <!-- Status Badge -->
+                        <span class="badge badge-overdue"     th:if="${task.overdue}"><i class="fa-solid fa-circle-exclamation"></i> Overdue</span>
+                        <span class="badge badge-completed"   th:if="${task.completed}"><i class="fa-solid fa-check"></i> Done</span>
+                        <span class="badge badge-in-progress" th:if="${!task.completed and !task.overdue and task.status.name() == 'IN_PROGRESS'}"><i class="fa-solid fa-spinner"></i> In Progress</span>
+                        <span class="badge badge-pending"     th:if="${!task.completed and !task.overdue and task.status.name() == 'PENDING'}"><i class="fa-solid fa-clock"></i> Pending</span>
+                    </div>
+                    <div class="task-desc" th:text="${task.description}">Description</div>
+                </div>
+                <div class="task-right">
+                    <div class="due-date">
+                        <i class="fa-regular fa-calendar"></i>
+                        <span th:text="${#temporals.format(task.dueDate, 'dd MMM yyyy')}">Date</span>
+                    </div>
+                    <div class="task-actions">
+                        <!-- Mark Done -->
+                        <form th:if="${!task.completed}" th:action="@{'/task/' + ${task.id} + '/complete'}" method="post" class="d-inline">
+                            <input type="hidden" name="carId" th:value="${car.id}">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fa-solid fa-check"></i> Done
+                            </button>
+                        </form>
+                        <!-- Delete Task -->
+                        <form th:action="@{'/task/' + ${task.id} + '/delete'}" method="post"
+                              onsubmit="return confirm('Remove this reminder?');">
+                            <input type="hidden" name="carId" th:value="${car.id}">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ── ADD REMINDER MODAL ── -->
+<div class="modal-overlay" id="addModal" onclick="closeOnOutside(event)">
+    <div class="modal-box">
+        <h4><i class="fa-solid fa-bell"></i> New Service Reminder</h4>
+        <form th:action="@{'/car/' + ${car.id} + '/task'}" th:object="${newTask}" method="post">
+            <div class="form-group">
+                <label>Service Type</label>
+                <input type="text" th:field="*{taskName}" placeholder="e.g. Oil Change, Tire Rotation" required>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select th:field="*{status}">
+                    <option value="PENDING">Pending</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Due Date</label>
+                <input type="date" th:field="*{dueDate}" required>
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea th:field="*{description}" placeholder="Optional notes..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="save-reminder-btn">
+                    <i class="fa-solid fa-floppy-disk"></i> Save Reminder
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal()  { document.getElementById('addModal').classList.add('active'); }
+    function closeModal() { document.getElementById('addModal').classList.remove('active'); }
+    function closeOnOutside(e) { if (e.target.id === 'addModal') closeModal(); }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>
