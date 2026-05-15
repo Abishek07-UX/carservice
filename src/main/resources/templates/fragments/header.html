@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="nav">
+    <nav class="navbar-shared">
+        <a href="/dashboard" class="brand-shared">🚗 CarTracker</a>
+        <div class="nav-links-shared">
+            <a href="/cars">Cars</a>
+            <a href="/service-records">Services</a>
+            <a href="/reminders">Reminders</a>
+            <a href="/reviews">Reviews</a>
+            <a href="/spare-parts">Inventory</a>
+        </div>
+        <div class="profile-wrap-shared">
+            <button class="profile-btn-shared" id="profileBtn" onclick="toggleDropdown()">
+                <span th:text="${userInitial != null ? userInitial : 'U'}">U</span>
+            </button>
+            <div class="dropdown-shared" id="dropdown">
+                <div class="dropdown-header-shared">
+                    <p th:text="${userName != null ? userName : 'User'}">User</p>
+                    <span th:text="${userEmail != null ? userEmail : 'user@email.com'}">user@email.com</span>
+                </div>
+                <button class="dropdown-item-shared" onclick="window.location.href='/edit-profile'">
+                    <span class="dropdown-icon">✏️</span> Edit Profile
+                </button>
+                <hr class="dropdown-divider-shared">
+                <button class="dropdown-item-shared danger" onclick="logout()">
+                    <span class="dropdown-icon">🚪</span> Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <style>
+        .navbar-shared {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 0.8rem 2rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .brand-shared {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #a78bfa !important;
+            text-decoration: none;
+            margin-right: 2rem;
+        }
+        .nav-links-shared {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .nav-links-shared a {
+            color: #e2e8f0;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .nav-links-shared a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-wrap-shared { position:relative; margin-left: auto; }
+        .profile-btn-shared { width:38px; height:38px; border-radius:50%; background: #7c3aed;
+                       color:#fff; border:none; cursor:pointer; font-size:15px; font-weight:600;
+                       display:flex; align-items:center; justify-content:center;
+                       transition:transform .15s; }
+        .profile-btn-shared:hover { transform:scale(1.08); }
+
+        .dropdown-shared { display:none; position:absolute; right:0; top:50px; background: #1e1b4b;
+                    border:1px solid rgba(255,255,255,0.15); border-radius:12px; width:220px;
+                    box-shadow:0 8px 32px rgba(0,0,0,0.4); overflow:hidden; z-index:200; }
+        .dropdown-shared.open { display:block; animation:fadeInNav .15s ease; }
+        @keyframes fadeInNav { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+
+        .dropdown-header-shared { padding:16px; border-bottom:1px solid rgba(255,255,255,0.1); text-align: left; }
+        .dropdown-header-shared p { font-size:13px; font-weight:600; color: #fff; margin: 0 0 2px 0; }
+        .dropdown-header-shared span { font-size:12px; color: #94a3b8; }
+
+        .dropdown-item-shared { display:flex; align-items:center; gap:10px; padding:12px 16px;
+                         font-size:14px; color: #e2e8f0; cursor:pointer;
+                         transition:background .1s; border:none; background:none; width:100%; text-align:left; }
+        .dropdown-item-shared:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .dropdown-item-shared.danger { color: #ef4444; }
+        .dropdown-item-shared.danger:hover { background: rgba(239, 68, 68, 0.1); }
+        .dropdown-icon { width:18px; text-align:center; font-size:15px; }
+        .dropdown-divider-shared { border:none; border-top:1px solid rgba(255,255,255,0.1); margin:4px 0; }
+    </style>
+
+    <script>
+        function toggleDropdown() {
+            document.getElementById('dropdown').classList.toggle('open');
+        }
+        document.addEventListener('click', function(e) {
+            const wrap = document.getElementById('profileBtn');
+            const dd   = document.getElementById('dropdown');
+            if (wrap && dd && !wrap.contains(e.target) && !dd.contains(e.target)) {
+                dd.classList.remove('open');
+            }
+        });
+        function logout() {
+            localStorage.removeItem('loggedUser');
+            document.cookie = "userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "userRole=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            window.location.href = '/index.html';
+        }
+    </script>
+</div>
+
+</body>
+</html>

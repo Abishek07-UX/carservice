@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><title>Reminders – CarTracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{min-height:100vh;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#e2e8f0;font-family:'Inter',sans-serif}
+        nav{background:rgba(0,0,0,.3);backdrop-filter:blur(10px);padding:1rem 2rem;display:flex;gap:.5rem;align-items:center;border-bottom:1px solid rgba(255,255,255,.1);flex-wrap:wrap}
+        nav a{color:#e2e8f0;text-decoration:none;padding:.4rem .9rem;border-radius:6px;font-size:.88rem;transition:background .2s}nav a:hover{background:rgba(255,255,255,.1)}
+        .brand{font-weight:700;font-size:1rem;color:#a78bfa!important;margin-right:.5rem}
+        .container{max-width:1200px;margin:0 auto;padding:2rem}
+        .ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}h1{font-size:1.6rem;font-weight:700}
+        .alert{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#ef4444;padding:.75rem 1rem;border-radius:8px;margin-bottom:1rem;font-size:.88rem}
+        .card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:1.5rem}
+        table{width:100%;border-collapse:collapse}th,td{padding:.75rem 1rem;text-align:left;border-bottom:1px solid rgba(255,255,255,.08);font-size:.86rem}
+        th{color:#94a3b8;font-weight:500;text-transform:uppercase;font-size:.72rem;letter-spacing:.06em}tr:hover td{background:rgba(255,255,255,.03)}
+        .btn{display:inline-block;padding:.45rem 1rem;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:500;transition:all .2s;border:none;cursor:pointer}
+        .btn-primary{background:#7c3aed;color:#fff}.btn-warning{background:#f59e0b;color:#fff}
+        .btn-danger{background:#ef4444;color:#fff}.btn-info{background:#06b6d4;color:#fff}.btn-sm{padding:.26rem .6rem;font-size:.76rem}
+        .badge{padding:.22rem .65rem;border-radius:999px;font-size:.72rem;font-weight:600}
+        .ba{background:rgba(6,182,212,.2);color:#06b6d4}.bd{background:rgba(148,163,184,.2);color:#94a3b8}
+        .bo{background:rgba(239,68,68,.2);color:#ef4444}
+        .bs{background:rgba(245,158,11,.2);color:#f59e0b}
+        .bu{background:rgba(16,185,129,.2);color:#10b981}
+        .row-overdue td{background:rgba(239,68,68,.05)!important}
+        .row-soon td{background:rgba(245,158,11,.05)!important}
+        .empty{text-align:center;padding:3rem;color:#94a3b8}
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: nav}"></div>
+<div class="container">
+    <div class="ph">
+        <h1>⏰ Service Reminders</h1>
+        <a th:if="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN'}" href="/reminders/new" class="btn btn-primary">+ Add Reminder</a>
+    </div>
+    <div class="alert" th:if="${overdueCount > 0}">
+        🚨 You have <strong th:text="${overdueCount}"></strong> overdue reminder(s)!
+    </div>
+    <div class="card">
+        <table>
+            <thead>
+            <tr><th>ID</th><th>Car</th><th>Type</th><th>Due Date</th><th>Notes</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(reminders)}">
+                <td colspan="7" class="empty">No reminders. <a href="/reminders/new" style="color:#7c3aed">Create one!</a></td>
+            </tr>
+            <tr th:each="r : ${reminders}"
+                th:classappend="${r.overdue ? 'row-overdue' : (r.dueSoon ? 'row-soon' : '')}">
+                <td th:text="${r.id}"></td>
+                <td th:text="${r.car != null ? r.car.make + ' ' + r.car.model : '—'}"></td>
+                <td th:text="${r.reminderType}"></td>
+                <td>
+                    <span th:text="${r.dueDate}"></span>
+                    <span th:if="${r.overdue}" class="badge bo" style="margin-left:.4rem">OVERDUE</span>
+                </td>
+                <td th:text="${r.notes}"></td>
+                <td>
+                    <span th:if="${r.status.name() == 'DISMISSED'}" class="badge bd">Dismissed</span>
+                    <div th:if="${r.status.name() == 'ACTIVE'}">
+                        <span th:if="${r.overdue}" class="badge bo">🔴 Overdue</span>
+                        <span th:if="${r.dueSoon}" class="badge bs">🟡 Due Soon</span>
+                        <span th:if="${r.upcoming}" class="badge bu">🟢 Upcoming</span>
+                    </div>
+                </td>
+                <td style="display:flex;gap:.3rem;flex-wrap:wrap">
+                    <a th:if="${r.status.name() == 'ACTIVE'}" th:href="@{/reminders/{id}/dismiss(id=${r.id})}"
+                       class="btn btn-info btn-sm">Dismiss</a>
+                    <a th:if="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN'}" th:href="@{/reminders/{id}/edit(id=${r.id})}" class="btn btn-warning btn-sm">Edit</a>
+                    <a th:if="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN'}" th:href="@{/reminders/{id}/delete(id=${r.id})}" class="btn btn-danger btn-sm"
+                       onclick="return confirm('Delete?')">Del</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
