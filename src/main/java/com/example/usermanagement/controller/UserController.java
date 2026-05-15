@@ -1,6 +1,5 @@
 package com.example.usermanagement.controller;
 
-import com.example.usermanagement.model.Role;
 import com.example.usermanagement.model.User;
 import com.example.usermanagement.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,13 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<User> getById(@PathVariable Long id) {
         return userService.getUserById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+    // READ — get one user by email
+    @GetMapping("/email/{email}")
+    public ResponseEntity<User> getByEmail(@PathVariable String email) {
+        return userService.getUserById(email)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -71,4 +77,5 @@ public class UserController {
 class LoginRequest {
     public String email;
     public String password;
+
 }
