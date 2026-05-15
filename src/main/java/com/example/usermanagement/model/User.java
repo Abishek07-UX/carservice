@@ -1,20 +1,23 @@
 package com.example.usermanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import com.example.usermanagement.model.Role;
 
 @Entity
 @Table(name = "users")
 
+
 public class User extends Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Role role = Role.USER; 
+    private Role role = Role.USER;
 
     // Polymorphism: implementing abstract method
     @Override
@@ -26,3 +29,4 @@ public class User extends Person {
     public void setPassword(String p) { this.password = p; }
     public void setRole(Role role) { this.role = role; }
 }
+

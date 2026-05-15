@@ -35,6 +35,11 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    // READ — get one user by Email instead of ID
+    public Optional<User> getUserById(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     // UPDATE — update user details
     public User updateUser(Long id, User updatedUser) {
         User user = userRepository.findById(id).orElseThrow();
