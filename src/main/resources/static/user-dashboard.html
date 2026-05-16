@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard — Car Service</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <style>
+        :root {
+          --bg: #f5f6fa;
+          --card: #ffffff;
+          --primary: #2563eb;
+          --primary-dark: #1d4ed8;
+          --danger: #ef4444;
+          --danger-dark: #dc2626;
+          --text: #111827;
+          --muted: #6b7280;
+          --border: #e5e7eb;
+          --success: #10b981;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+        /* NAVBAR */
+        .navbar { background:var(--card); border-bottom:1px solid var(--border);
+                  padding:0 32px; height:64px; display:flex; align-items:center;
+                  justify-content:space-between; position:sticky; top:0; z-index:100; }
+        .nav-logo { font-family:'DM Serif Display',serif; font-size:20px; color:var(--primary); }
+        .nav-logo span { color:var(--text); }
+
+        /* PROFILE ICON */
+        .profile-wrap { position:relative; }
+        .profile-btn { width:40px; height:40px; border-radius:50%; background:var(--primary);
+                       color:#fff; border:none; cursor:pointer; font-size:16px; font-weight:600;
+                       display:flex; align-items:center; justify-content:center;
+                       transition:transform .15s; }
+        .profile-btn:hover { transform:scale(1.08); }
+
+        /* DROPDOWN */
+        .dropdown { display:none; position:absolute; right:0; top:52px; background:var(--card);
+                    border:1px solid var(--border); border-radius:12px; width:220px;
+                    box-shadow:0 8px 24px rgba(0,0,0,0.12); overflow:hidden; z-index:200; }
+        .dropdown.open { display:block; animation:fadeIn .15s ease; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+        .dropdown-header { padding:16px; border-bottom:1px solid var(--border); }
+        .dropdown-header p { font-size:13px; font-weight:600; color:var(--text); }
+        .dropdown-header span { font-size:12px; color:var(--muted); }
+        .dropdown-item { display:flex; align-items:center; gap:10px; padding:12px 16px;
+                         font-size:14px; color:var(--text); cursor:pointer;
+                         transition:background .1s; border:none; background:none; width:100%; text-align:left; }
+        .dropdown-item:hover { background:#f9fafb; }
+        .dropdown-item.danger { color:var(--danger); }
+        .dropdown-item.danger:hover { background:#fff5f5; }
+        .dropdown-icon { width:18px; text-align:center; font-size:15px; }
+        .dropdown-divider { border:none; border-top:1px solid var(--border); margin:4px 0; }
+
+        /* MAIN */
+        .main { padding:32px; max-width:1100px; margin:0 auto; }
+
+        /* WELCOME BANNER */
+        .welcome { background:linear-gradient(135deg,#2563eb,#1d4ed8);
+                   border-radius:16px; padding:28px 32px; color:#fff; margin-bottom:28px;
+                   display:flex; justify-content:space-between; align-items:center; }
+        .welcome h2 { font-family:'DM Serif Display',serif; font-size:24px; margin-bottom:6px; }
+        .welcome p { font-size:14px; opacity:0.85; }
+        .welcome-icon { font-size:48px; opacity:0.6; }
+
+        /* SECTION TITLE */
+        .section-label { font-size:13px; font-weight:600; color:var(--muted);
+                         text-transform:uppercase; letter-spacing:0.5px; margin-bottom:16px; }
+
+        /* NAV CARDS GRID */
+        .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+                gap:16px; margin-bottom:32px; }
+        .nav-card { background:var(--card); border-radius:14px; padding:24px 20px;
+                    border:1.5px solid var(--border); cursor:pointer;
+                    transition:all .2s; text-align:left; }
+        .nav-card:hover { border-color:var(--primary); transform:translateY(-3px);
+                          box-shadow:0 8px 20px rgba(37,99,235,0.1); }
+        .card-icon { width:44px; height:44px; border-radius:10px; display:flex;
+                     align-items:center; justify-content:center; font-size:20px; margin-bottom:14px; }
+        .card-icon.blue   { background:#eff6ff; }
+        .card-icon.green  { background:#f0fdf4; }
+        .card-icon.amber  { background:#fffbeb; }
+        .card-icon.purple { background:#f5f3ff; }
+        .nav-card h4 { font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px; }
+        .nav-card p  { font-size:12px; color:var(--muted); line-height:1.5; }
+
+        /* COMING SOON OVERLAY */
+        .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45);
+                   justify-content:center; align-items:center; z-index:500; }
+        .overlay.show { display:flex; animation:fadeIn .2s ease; }
+        .popup { background:var(--card); border-radius:20px; padding:40px 36px;
+                 text-align:center; max-width:360px; width:90%;
+                 box-shadow:0 20px 60px rgba(0,0,0,0.2); }
+        .popup-icon { font-size:52px; margin-bottom:16px; }
+        .popup h3 { font-family:'DM Serif Display',serif; font-size:22px; margin-bottom:8px; }
+        .popup p  { font-size:14px; color:var(--muted); line-height:1.6; margin-bottom:24px; }
+        .popup-close { padding:10px 32px; background:var(--primary); color:#fff;
+                       border:none; border-radius:8px; font-size:14px; font-weight:500;
+                       cursor:pointer; transition:background .15s; }
+        .popup-close:hover { background:var(--primary-dark); }
+
+        /* DELETE CONFIRM OVERLAY */
+        .del-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45);
+                       justify-content:center; align-items:center; z-index:500; }
+        .del-overlay.show { display:flex; animation:fadeIn .2s ease; }
+        .del-popup { background:var(--card); border-radius:20px; padding:36px;
+                     text-align:center; max-width:360px; width:90%;
+                     box-shadow:0 20px 60px rgba(0,0,0,0.2); }
+        .del-popup .del-icon { font-size:48px; margin-bottom:16px; }
+        .del-popup h3 { font-size:18px; font-weight:600; margin-bottom:8px; color:var(--text); }
+        .del-popup p  { font-size:14px; color:var(--muted); line-height:1.6; margin-bottom:24px; }
+        .del-btns { display:flex; gap:12px; }
+        .del-btns button { flex:1; padding:10px; border-radius:8px; font-size:14px;
+                           font-weight:500; cursor:pointer; border:none; }
+        .del-cancel { background:#f3f4f6; color:var(--text); }
+        .del-cancel:hover { background:#e5e7eb; }
+        .del-confirm { background:var(--danger); color:#fff; }
+        .del-confirm:hover { background:var(--danger-dark); }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-logo">Car<span>Service</span></div>
+    <div class="profile-wrap">
+        <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()">
+            <span id="profileInitial">U</span>
+        </button>
+        <div class="dropdown" id="dropdown">
+            <div class="dropdown-header">
+                <p id="dropName">User</p>
+                <span id="dropEmail">email</span>
+            </div>
+            <button class="dropdown-item" onclick="goToEditProfile()">
+                <span class="dropdown-icon">✏️</span> Edit Profile
+            </button>
+            <hr class="dropdown-divider">
+            <button class="dropdown-item danger" onclick="showDeleteConfirm()">
+                <span class="dropdown-icon">🗑️</span> Delete Account
+            </button>
+            <button class="dropdown-item" onclick="logout()">
+                <span class="dropdown-icon">🚪</span> Logout
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+    <!-- Welcome banner -->
+    <div class="welcome">
+        <div>
+            <h2 id="welcomeName">Welcome back!</h2>
+            <p>Manage your car services and maintenance all in one place.</p>
+        </div>
+        <div class="welcome-icon">🚗</div>
+    </div>
+
+    <!-- Nav cards -->
+    <div class="section-label">Services</div>
+    <div class="grid">
+        <div class="nav-card" onclick="showComingSoon('Car Management')">
+            <div class="card-icon blue">🚗</div>
+            <h4>Car Management</h4>
+            <p>Add and manage your vehicles</p>
+        </div>
+        <div class="nav-card" onclick="showComingSoon('Service & Maintenance Records')">
+            <div class="card-icon green">🔧</div>
+            <h4>Service Records</h4>
+            <p>View your service and maintenance history</p>
+        </div>
+        <div class="nav-card" onclick="showComingSoon('Service Reminders')">
+            <div class="card-icon amber">🔔</div>
+            <h4>Service Reminders</h4>
+            <p>Get notified about upcoming services</p>
+        </div>
+        <div class="nav-card" onclick="showComingSoon('Feedback & Reviews')">
+            <div class="card-icon purple">⭐</div>
+            <h4>Feedback & Reviews</h4>
+            <p>Share your feedback and read reviews</p>
+        </div>
+    </div>
+
+</div>
+
+<!-- Coming Soon Overlay -->
+<div class="overlay" id="overlay" onclick="hideComingSoon()">
+    <div class="popup" onclick="event.stopPropagation()">
+        <div class="popup-icon">🚧</div>
+        <h3 id="popupTitle">Coming Soon</h3>
+        <p>This section is being developed by our team and will be available very soon!</p>
+        <button class="popup-close" onclick="hideComingSoon()">Got it!</button>
+    </div>
+</div>
+
+<!-- Delete Account Overlay -->
+<div class="del-overlay" id="delOverlay">
+    <div class="del-popup">
+        <div class="del-icon">⚠️</div>
+        <h3>Delete Account?</h3>
+        <p>This will permanently delete your account and all your data. This action cannot be undone.</p>
+        <div class="del-btns">
+            <button class="del-cancel" onclick="hideDeleteConfirm()">Cancel</button>
+            <button class="del-confirm" onclick="deleteAccount()">Yes, Delete</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const user = JSON.parse(localStorage.getItem('loggedUser'));
+    if (!user) window.location.href = 'index.html';
+
+    // Set user info
+    document.getElementById('welcomeName').textContent = 'Welcome back, ' + user.name + '!';
+    document.getElementById('profileInitial').textContent = user.name.charAt(0).toUpperCase();
+    document.getElementById('dropName').textContent  = user.name;
+    document.getElementById('dropEmail').textContent = user.email;
+
+    // Dropdown toggle
+    function toggleDropdown() {
+      document.getElementById('dropdown').classList.toggle('open');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      const wrap = document.getElementById('profileBtn');
+      const dd   = document.getElementById('dropdown');
+      if (!wrap.contains(e.target) && !dd.contains(e.target)) {
+        dd.classList.remove('open');
+      }
+    });
+
+    // Navigate to edit profile page
+    function goToEditProfile() {
+      window.location.href = 'edit-profile.html';
+    }
+
+    // Coming soon
+    function showComingSoon(section) {
+      document.getElementById('popupTitle').textContent = section + ' — Coming Soon!';
+      document.getElementById('overlay').classList.add('show');
+    }
+    function hideComingSoon() {
+      document.getElementById('overlay').classList.remove('show');
+    }
+
+    // Delete account
+    function showDeleteConfirm() {
+      document.getElementById('dropdown').classList.remove('open');
+      document.getElementById('delOverlay').classList.add('show');
+    }
+    function hideDeleteConfirm() {
+      document.getElementById('delOverlay').classList.remove('show');
+    }
+    async function deleteAccount() {
+      const res = await fetch(`http://localhost:8080/api/users/${user.id}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        localStorage.removeItem('loggedUser');
+        alert('Your account has been deleted.');
+        window.location.href = 'index.html';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('loggedUser');
+      window.location.href = 'index.html';
+    }
+</script>
+</body>
+</html>
