@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"><title>Review Form – CarTracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{min-height:100vh;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#e2e8f0;font-family:'Inter',sans-serif}
+    nav{background:rgba(0,0,0,.3);backdrop-filter:blur(10px);padding:1rem 2rem;display:flex;gap:.5rem;align-items:center;border-bottom:1px solid rgba(255,255,255,.1);flex-wrap:wrap}
+    nav a{color:#e2e8f0;text-decoration:none;padding:.4rem .9rem;border-radius:6px;font-size:.88rem;transition:background .2s}nav a:hover{background:rgba(255,255,255,.1)}
+    .brand{font-weight:700;font-size:1rem;color:#a78bfa!important;margin-right:.5rem}
+    .container{max-width:800px;margin:0 auto;padding:2rem}
+    .ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}h1{font-size:1.6rem;font-weight:700}
+    .card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:2rem}
+    .fg{margin-bottom:1rem}label{display:block;margin-bottom:.35rem;font-size:.83rem;color:#94a3b8}
+    input,select,textarea{width:100%;padding:.6rem .9rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#e2e8f0;font-size:.88rem;outline:none;transition:border .2s}
+    input:focus,select:focus,textarea:focus{border-color:#7c3aed}select option{background:#1e1b4b;color:#e2e8f0}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .btn{display:inline-block;padding:.5rem 1.3rem;border-radius:8px;text-decoration:none;font-size:.88rem;font-weight:500;transition:all .2s;border:none;cursor:pointer}
+    .btn-primary{background:#7c3aed;color:#fff}.btn-info{background:#06b6d4;color:#fff}
+    .actions{display:flex;gap:.8rem;margin-top:1.5rem}
+  </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: nav}"></div>
+<div class="container">
+  <div class="ph">
+    <h1 th:text="${review.id != null ? 'Edit Review' : 'Submit Review'}">Form</h1>
+    <a th:href="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN' ? '/admin-dashboard' : '/user-dashboard.html'}" class="btn btn-info">← Back</a>
+  </div>
+  <div class="card">
+    <form th:action="${review.id != null ? '/reviews/' + review.id + '/update' : '/reviews/save'}"
+          method="post" th:object="${review}">
+      <input type="hidden" th:field="*{id}"/>
+      <div class="grid2">
+        <div class="fg">
+          <label>Customer</label>
+          <select name="userId">
+            <option value="">-- Select Customer --</option>
+            <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.name}"
+                    th:selected="${review.user != null and review.user.id == u.id}"></option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Service Record</label>
+          <select name="serviceRecordId">
+            <option value="">-- Select Service --</option>
+            <option th:each="sr : ${serviceRecords}" th:value="${sr.id}"
+                    th:text="${sr.serviceType + ' – ' + (sr.car != null ? sr.car.make + ' ' + sr.car.model : '')}"
+                    th:selected="${review.serviceRecord != null and review.serviceRecord.id == sr.id}"></option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Rating (1–5)</label>
+          <select th:field="*{rating}">
+            <option value="">-- Select Rating --</option>
+            <option value="1">★ 1 – Poor</option>
+            <option value="2">★★ 2 – Fair</option>
+            <option value="3">★★★ 3 – Good</option>
+            <option value="4">★★★★ 4 – Very Good</option>
+            <option value="5">★★★★★ 5 – Excellent</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Comment</label><textarea th:field="*{comment}" rows="4" placeholder="Share your experience..."></textarea></div>
+      <div class="actions">
+        <button type="submit" class="btn btn-primary">⭐ Submit Review</button>
+        <a th:href="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN' ? '/admin-dashboard' : '/user-dashboard.html'}" class="btn btn-info">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>

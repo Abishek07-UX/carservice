@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><title>Reviews – CarTracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{min-height:100vh;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#e2e8f0;font-family:'Inter',sans-serif}
+        nav{background:rgba(0,0,0,.3);backdrop-filter:blur(10px);padding:1rem 2rem;display:flex;gap:.5rem;align-items:center;border-bottom:1px solid rgba(255,255,255,.1);flex-wrap:wrap}
+        nav a{color:#e2e8f0;text-decoration:none;padding:.4rem .9rem;border-radius:6px;font-size:.88rem;transition:background .2s}nav a:hover{background:rgba(255,255,255,.1)}
+        .brand{font-weight:700;font-size:1rem;color:#a78bfa!important;margin-right:.5rem}
+        .container{max-width:1200px;margin:0 auto;padding:2rem}
+        .ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}h1{font-size:1.6rem;font-weight:700}
+        .avg-bar{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem}
+        .avg-num{font-size:2.5rem;font-weight:700;color:#f59e0b}.avg-label{color:#94a3b8;font-size:.88rem}
+        .stars{color:#f59e0b;font-size:1.1rem}
+        .card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:1.5rem}
+        table{width:100%;border-collapse:collapse}th,td{padding:.75rem 1rem;text-align:left;border-bottom:1px solid rgba(255,255,255,.08);font-size:.86rem}
+        th{color:#94a3b8;font-weight:500;text-transform:uppercase;font-size:.72rem;letter-spacing:.06em}tr:hover td{background:rgba(255,255,255,.03)}
+        .btn{display:inline-block;padding:.45rem 1rem;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:500;transition:all .2s;border:none;cursor:pointer}
+        .btn-primary{background:#7c3aed;color:#fff}.btn-warning{background:#f59e0b;color:#fff}
+        .btn-danger{background:#ef4444;color:#fff}.btn-sm{padding:.26rem .6rem;font-size:.76rem}
+        .empty{text-align:center;padding:3rem;color:#94a3b8}
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: nav}"></div>
+<div class="container">
+    <div class="ph">
+        <h1>⭐ Reviews & Feedback</h1>
+        <a href="/reviews/new" class="btn btn-primary">+ Submit Review</a>
+    </div>
+    <div class="avg-bar">
+        <div class="avg-num" th:text="${avgRating}">N/A</div>
+        <div>
+            <div class="stars">★★★★★</div>
+            <div class="avg-label">Average Rating across all reviews</div>
+        </div>
+    </div>
+    <div class="card">
+        <table>
+            <thead>
+            <tr><th>ID</th><th>Customer</th><th>Service</th><th>Rating</th><th>Comment</th><th>Date</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(reviews)}">
+                <td colspan="7" class="empty">No reviews yet. <a href="/reviews/new" style="color:#7c3aed">Be the first!</a></td>
+            </tr>
+            <tr th:each="r : ${reviews}">
+                <td th:text="${r.id}"></td>
+                <td th:text="${r.user != null ? r.user.name : '—'}"></td>
+                <td th:text="${r.serviceRecord != null ? r.serviceRecord.serviceType : '—'}"></td>
+                <td>
+                    <span style="color:#f59e0b" th:text="${'★'.repeat(r.rating != null ? r.rating : 0)}"></span>
+                    <span style="color:#64748b;font-size:.8rem" th:text="${r.rating != null ? ' (' + r.rating + '/5)' : ''}"></span>
+                </td>
+                <td th:text="${r.comment}"></td>
+                <td th:text="${r.dateSubmitted}"></td>
+                <td style="display:flex;gap:.3rem">
+                    <a th:href="@{/reviews/{id}/edit(id=${r.id})}" class="btn btn-warning btn-sm">Edit</a>
+                    <a th:href="@{/reviews/{id}/delete(id=${r.id})}" class="btn btn-danger btn-sm"
+                       onclick="return confirm('Delete?')">Del</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

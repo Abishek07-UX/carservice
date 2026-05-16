@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"><title>Car Service Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{min-height:100vh;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#e2e8f0;font-family:'Inter',sans-serif}
+    nav{background:rgba(0,0,0,.3);backdrop-filter:blur(10px);padding:1rem 2rem;display:flex;gap:.5rem;align-items:center;border-bottom:1px solid rgba(255,255,255,.1);flex-wrap:wrap}
+    nav a{color:#e2e8f0;text-decoration:none;padding:.4rem .9rem;border-radius:6px;font-size:.88rem;transition:background .2s}
+    nav a:hover{background:rgba(255,255,255,.1)}.brand{font-weight:700;font-size:1rem;color:#a78bfa!important;margin-right:.5rem}
+    .container{max-width:1200px;margin:0 auto;padding:2rem}
+    h1{font-size:1.6rem;font-weight:700;margin-bottom:.4rem}
+    .sub{color:#94a3b8;font-size:.9rem;margin-bottom:2rem}
+    .sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1.2rem;margin-bottom:2.5rem}
+    .sc{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:1.5rem;text-align:center;text-decoration:none;color:#e2e8f0;transition:transform .2s,border-color .2s,box-shadow .2s;display:block}
+    .sc:hover{transform:translateY(-4px);border-color:#7c3aed;box-shadow:0 8px 30px rgba(124,58,237,.2)}
+    .sn{font-size:2.2rem;font-weight:700;color:#06b6d4}.sl{font-size:.82rem;color:#94a3b8;margin-top:.4rem}
+    .sn.red{color:#ef4444}.sc.warn{border-color:rgba(239,68,68,.3)}
+    .card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:1.5rem}
+    h2{font-size:1rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem}
+    .links{display:flex;gap:.8rem;flex-wrap:wrap}
+    .lnk{display:flex;align-items:center;gap:.6rem;padding:.8rem 1.2rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:10px;text-decoration:none;color:#e2e8f0;font-size:.88rem;transition:all .2s}
+    .lnk:hover{background:rgba(124,58,237,.2);border-color:#7c3aed}
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/dashboard" class="brand">🚗 CarTracker</a>
+  <a href="/cars">🚗 Cars</a>
+  <a href="/service-records">🔧 Services</a>
+  <a href="/reminders">⏰ Reminders</a>
+  <a href="/reviews">⭐ Reviews</a>
+  <a href="/spare-parts">📦 Inventory</a>
+  <a th:if="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN'}" href="/admin-dashboard.html" style="background: rgba(124,58,237,.3); color: #fff;">👥 User Management</a>
+  <a href="#" onclick="logout()" style="margin-left: auto; color: #ef4444; font-weight: 600;">🚪 Logout</a>
+</nav>
+<div class="container">
+  <h1>Dashboard</h1>
+  <p class="sub">Car Service Tracker — Overview</p>
+  <div class="sg">
+    <a href="/cars" class="sc">
+      <div class="sn" th:text="${totalCars}">0</div>
+      <div class="sl">🚗 Total Cars</div>
+    </a>
+    <a href="/service-records" class="sc">
+      <div class="sn" th:text="${totalRecords}">0</div>
+      <div class="sl">🔧 Service Records</div>
+    </a>
+    <a href="/reminders" class="sc">
+      <div class="sn" th:text="${activeReminders}">0</div>
+      <div class="sl">⏰ Active Reminders</div>
+    </a>
+    <a href="/reminders" class="sc warn">
+      <div class="sn red" th:text="${overdueReminders}">0</div>
+      <div class="sl">🚨 Overdue Reminders</div>
+    </a>
+    <a href="/reviews" class="sc">
+      <div class="sn" th:text="${avgRating}">N/A</div>
+      <div class="sl">⭐ Avg Rating (<span th:text="${totalReviews}">0</span> reviews)</div>
+    </a>
+    <a href="/spare-parts" class="sc warn">
+      <div class="sn red" th:text="${lowStockParts}">0</div>
+      <div class="sl">⚠️ Low Stock (<span th:text="${totalParts}">0</span> total parts)</div>
+    </a>
+  </div>
+  <div class="card">
+    <h2>Quick Navigation</h2>
+    <div class="links">
+      <a href="/cars/new" class="lnk">➕ Add Car</a>
+      <a href="/service-records/new" class="lnk">➕ New Service Record</a>
+      <a href="/reminders/new" class="lnk">➕ New Reminder</a>
+      <a href="/reviews/new" class="lnk">➕ Submit Review</a>
+      <a href="/spare-parts/new" class="lnk">➕ Add Part</a>
+    </div>
+  </div>
+</div>
+<script>
+  function logout() {
+    localStorage.removeItem('loggedUser');
+    window.location.href = '/index.html';
+  }
+</script>
+</body>
+</html>
