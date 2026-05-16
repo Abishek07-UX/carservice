@@ -1,4 +1,4 @@
-package com.carmanager.service_reminder.model;
+package com.example.usermanagement.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;

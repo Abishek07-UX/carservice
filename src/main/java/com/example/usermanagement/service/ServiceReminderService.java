@@ -1,4 +1,4 @@
-package com.carmanager.service_reminder.service;
+package com.example.usermanagement.service;
 
 import com.example.usermanagement.model.ReminderStatus;
 import com.example.usermanagement.model.ServiceReminder;

@@ -1,4 +1,4 @@
-package com.carmanager.service_reminder.model;
+package com.example.usermanagement.model;
 
 public enum ReminderStatus {
     ACTIVE,
