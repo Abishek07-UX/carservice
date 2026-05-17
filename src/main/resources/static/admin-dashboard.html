@@ -102,8 +102,11 @@
             const res = await fetch(`${API_BASE}/users`);
             allUsers = await res.json();
 
-            document.getElementById('totalUsers').textContent = allUsers.length;
-            document.getElementById('totalAdmins').textContent = allUsers.filter(u => u.role === 'ADMIN').length;
+             const customers = allUsers.filter(u => u.role === 'USER');
+             const admins = allUsers.filter(u => u.role === 'ADMIN');
+
+             document.getElementById('totalUsers').textContent = customers.length;
+             document.getElementById('totalAdmins').textContent = admins.length;
 
             renderTable(allUsers);
         } catch (e) {

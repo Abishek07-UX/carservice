@@ -31,9 +31,8 @@ public class UserService {
     }
 
     // READ — get one user by id
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
-    }
+    public Optional<User> getUserByName(String name) {
+        return userRepository.findByName(name);}
 
     // READ — get one user by Email instead of ID
     public Optional<User> getUserById(String email) {
@@ -46,6 +45,10 @@ public class UserService {
         user.setName(updatedUser.getName());
         user.setEmail(updatedUser.getEmail());
         user.setPhone(updatedUser.getPhone());
+
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().trim().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
         return userRepository.save(user);
     }
 
@@ -54,6 +57,7 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow();
         user.setRole(Role.valueOf(role));
         return userRepository.save(user);
+
     }
 
     // DELETE — remove a user

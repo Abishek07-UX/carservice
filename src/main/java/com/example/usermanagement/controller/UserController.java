@@ -29,8 +29,8 @@ public class UserController {
 
     // READ — GET /api/users/1
     @GetMapping("/{id}")
-    public ResponseEntity<User> getById(@PathVariable Long id) {
-        return userService.getUserById(id)
+    public ResponseEntity<User> getById(@PathVariable String name) {
+        return userService.getUserByName(name)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

@@ -128,10 +128,10 @@
             return;
         }
 
-        const updated = {
-            name, email, phone,
-            password: password ? password : user.password
-        };
+       const updated = { name, email, phone };
+        if (password) {
+        updated.password = password;
+    }
 
         try {
             const res = await fetch(`${API_BASE}/users/${user.id}`, {
