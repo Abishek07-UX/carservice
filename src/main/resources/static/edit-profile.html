@@ -3,156 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Hub — Car Management</title>
+    <title>My Profile — AutoCare Pro</title>
+    <meta name="description" content="Update your profile details and manage your AutoCare Pro account settings.">
     <link rel="stylesheet" href="style.css">
-    <style>
-        h1, h2, h3 { font-family: 'Bodoni Moda', serif; font-weight: 700; }
-        .profile-container {
-            max-width: 900px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 60px;
-        }
-        .profile-sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
-        }
-        .avatar-frame {
-            width: 120px;
-            height: 120px;
-            border-radius: 30px;
-            background: var(--accent);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            font-weight: 800;
-            box-shadow: 0 20px 40px rgba(57, 81, 68, 0.15);
-        }
-        .setting-section {
-            background: var(--bg-sheet);
-            padding: 40px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-light);
-            margin-bottom: 32px;
-        }
-        .section-title {
-            font-size: 20px;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .section-title span {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--accent-warm);
-            font-family: 'Jost', sans-serif;
-            font-weight: 700;
-        }
-        .field-group { margin-bottom: 24px; }
-        .field-label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            display: block;
-        }
-        .btn-save {
-            background: var(--text-dark);
-            color: white;
-            padding: 14px 28px;
-            border: none;
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-        }
-        .btn-save:hover { background: var(--accent); transform: translateX(5px); }
-        
-        .nav-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-slate);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 40px;
-        }
-        .nav-back:hover { color: var(--accent); }
-    </style>
 </head>
 <body>
 
 <div class="dashboard-layout">
-    <!-- Reusing sidebar for consistency -->
+    <!-- Sidebar -->
     <aside class="sidebar">
-        <div style="margin-bottom: 48px;">
-            <h1 style="font-size: 24px; color: var(--text-dark);">Car Management</h1>
+        <div class="sidebar-brand">
+            <div class="brand-icon">🔧</div>
+            <div class="brand-text">
+                <h1>AutoCare Pro</h1>
+                <span>Customer Portal</span>
+            </div>
         </div>
+
+        <div class="nav-section-label">Services</div>
         <nav>
-            <a href="user-dashboard.html" class="nav-link">My Vehicles</a>
-            <a href="#" class="nav-link" onclick="alert('Coming soon')">Service History</a>
-            <a href="edit-profile.html" class="nav-link active">My Profile</a>
+            <a href="user-dashboard.html" class="nav-link">
+                <span class="nav-icon">🏠</span> Dashboard
+            </a>
+            <a href="#" class="nav-link" onclick="alert('Coming soon')">
+                <span class="nav-icon">🚗</span> My Vehicles
+            </a>
+            <a href="#" class="nav-link" onclick="alert('Coming soon')">
+                <span class="nav-icon">📋</span> Service History
+            </a>
         </nav>
-        <div style="margin-top: auto;">
-            <a href="#" class="nav-link" onclick="logout()" style="color: #B91C1C;">Sign Out</a>
-        </div>
+
+        <div class="nav-section-label" style="margin-top: auto;">Account</div>
+        <a href="edit-profile.html" class="nav-link active">
+            <span class="nav-icon">👤</span> My Profile
+        </a>
+        <a href="#" class="nav-link logout" onclick="logout()">
+            <span class="nav-icon">🚪</span> Sign Out
+        </a>
     </aside>
 
+    <!-- Main Content -->
     <main class="main-content">
         <div class="profile-container animate-fade">
+            <!-- Profile Sidebar -->
             <div class="profile-sidebar">
                 <div class="avatar-frame" id="avatarBig">U</div>
                 <div>
-                    <h2 style="font-size: 28px;" id="dispName">User Name</h2>
-                    <p style="color: var(--text-muted); font-size: 14px;" id="dispEmail">email@example.com</p>
+                    <h2 style="font-size: 26px;" id="dispName">User Name</h2>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;" id="dispEmail">email@example.com</p>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-top: 2px;" id="dispPhone"></p>
                 </div>
-                <div style="margin-top: 20px;">
-                    <p style="font-size: 13px; line-height: 1.6; color: var(--text-slate);">
-                        Your profile helps us personalize your car care experience. Keep it updated to receive better service notifications.
+                <div style="margin-top: 16px;">
+                    <p style="font-size: 13px; line-height: 1.7; color: var(--text-secondary);">
+                        Keep your profile updated so we can reach you for service notifications, appointment reminders, and vehicle health alerts.
                     </p>
+                </div>
+                <div style="margin-top: 8px;">
+                    <span class="tag orange">🔧 Customer</span>
                 </div>
             </div>
 
+            <!-- Profile Form -->
             <div class="profile-main">
                 <div class="setting-section">
-                    <h3 class="section-title"><span>01</span> Personal Details</h3>
-                    
+                    <h3 class="section-title"><span class="section-num">01</span> Personal Details</h3>
+
                     <div class="field-group">
                         <label class="field-label">Full Name</label>
-                        <input type="text" id="name" class="input-field" placeholder="Your name">
+                        <input type="text" id="name" class="input-field" placeholder="Your full name">
                     </div>
 
                     <div class="field-group">
                         <label class="field-label">Email Address</label>
-                        <input type="email" id="email" class="input-field" placeholder="your@email.com">
+                        <input type="email" id="email" class="input-field" placeholder="you@example.com">
                     </div>
 
                     <div class="field-group">
-                        <label class="field-label">Contact Number</label>
-                        <input type="text" id="phone" class="input-field" placeholder="+1 000 000 0000">
+                        <label class="field-label">Phone Number</label>
+                        <input type="tel" id="phone" class="input-field" placeholder="+91 98765 43210">
                     </div>
                 </div>
 
                 <div class="setting-section">
-                    <h3 class="section-title"><span>02</span> Security</h3>
+                    <h3 class="section-title"><span class="section-num">02</span> Security</h3>
                     <div class="field-group">
                         <label class="field-label">New Password</label>
-                        <input type="password" id="password" class="input-field" placeholder="Leave blank to maintain current">
-                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">Ensure your password is at least 8 characters long.</p>
+                        <input type="password" id="password" class="input-field" placeholder="Leave blank to keep current password">
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">Password must be at least 8 characters long.</p>
                     </div>
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 20px; align-items: center;">
-                    <div id="msgBox" style="font-size: 14px;"></div>
-                    <button class="btn-save" onclick="saveProfile()">Commit Changes</button>
+                    <div id="msgBox" style="font-size: 14px; font-weight: 500;"></div>
+                    <button class="btn-save" onclick="saveProfile()">💾 Save Changes</button>
                 </div>
             </div>
         </div>
@@ -164,12 +107,13 @@
     requireAuth();
     const user = getLoggedUser();
 
-    // Data Sync
+    // Populate form
     document.getElementById('name').value = user.name;
     document.getElementById('email').value = user.email;
     document.getElementById('phone').value = user.phone || '';
     document.getElementById('dispName').textContent = user.name;
     document.getElementById('dispEmail').textContent = user.email;
+    document.getElementById('dispPhone').textContent = user.phone || '';
     document.getElementById('avatarBig').textContent = user.name.charAt(0).toUpperCase();
 
     async function saveProfile() {
@@ -180,7 +124,7 @@
         const msgBox = document.getElementById('msgBox');
 
         if (!name || !email) {
-            showMsg('Identification required.', '#B91C1C');
+            showMsg('Name and email are required.', 'var(--error)');
             return;
         }
 
@@ -199,23 +143,25 @@
             if (res.ok) {
                 const updatedUser = await res.json();
                 setLoggedUser(updatedUser);
-                showMsg('Changes saved successfully.', 'var(--accent)');
-                
-                // Refresh local view
+                showMsg('✓ Changes saved successfully!', 'var(--success)');
+
+                // Refresh display
                 document.getElementById('dispName').textContent = updatedUser.name;
                 document.getElementById('dispEmail').textContent = updatedUser.email;
+                document.getElementById('dispPhone').textContent = updatedUser.phone || '';
                 document.getElementById('avatarBig').textContent = updatedUser.name.charAt(0).toUpperCase();
-                
+
                 setTimeout(() => window.location.href = 'user-dashboard.html', 1500);
             } else {
-                showMsg('Update failed. Please try again.', '#B91C1C');
+                showMsg('Update failed. Please try again.', 'var(--error)');
             }
         } catch (e) {
-            showMsg('Connection error.', '#B91C1C');
+            showMsg('Connection error.', 'var(--error)');
         }
     }
 
     function showMsg(text, color) {
+        const msgBox = document.getElementById('msgBox');
         msgBox.textContent = text;
         msgBox.style.color = color;
     }

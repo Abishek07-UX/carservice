@@ -3,138 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register — CarService Pro</title>
+    <title>Register — AutoCare Pro</title>
+    <meta name="description" content="Create your AutoCare Pro account to book car services and track maintenance history.">
     <link rel="stylesheet" href="style.css">
-    <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            padding: 20px;
-        }
-
-        .auth-card {
-            width: 100%;
-            max-width: 450px;
-            padding: 48px;
-            background: white;
-        }
-
-        .auth-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        .auth-header h2 {
-            font-size: 28px;
-            color: var(--text-main);
-            margin-bottom: 8px;
-        }
-
-        .auth-header p {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        .btn-primary {
-            width: 100%;
-            margin-top: 8px;
-        }
-
-        .msg {
-            margin-top: 16px;
-            font-size: 14px;
-            min-height: 20px;
-            text-align: center;
-        }
-
-        .error-msg { color: var(--error); }
-        .success-msg { color: var(--success); }
-
-        .footer-links {
-            margin-top: 32px;
-            text-align: center;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-    </style>
 </head>
 <body>
 
-<div class="auth-card glass-card animate-fade-in">
-    <div class="auth-header">
-        <h2>Create Account</h2>
-        <p>Join the future of fleet management.</p>
-    </div>
-    
-    <div class="form-group">
-        <label for="name">Full Name</label>
-        <input type="text" id="name" class="form-control" placeholder="John Doe">
-    </div>
-    
-    <div class="form-group">
-        <label for="email">Email Address</label>
-        <input type="email" id="email" class="form-control" placeholder="name@company.com">
-    </div>
-    
-    <div class="form-group">
-        <label for="phone">Phone Number</label>
-        <input type="text" id="phone" class="form-control" placeholder="+1 (555) 000-0000">
-    </div>
-    
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" class="form-control" placeholder="••••••••">
-    </div>
-    
-    <button class="btn-primary" onclick="register()">Create Account</button>
-    
-    <div id="msg" class="msg"></div>
-    
-    <div class="footer-links">
-        Already have an account? <a href="index.html">Sign in here</a>
+<div class="ambient-bg"></div>
+<div class="grid-pattern"></div>
+
+<div class="viewport-center">
+    <div class="auth-sheet animate-fade" style="max-width: 480px; width: 100%;">
+        <div style="text-align: center; margin-bottom: 32px;">
+            <div style="display: inline-flex; align-items: center; gap: 10px; margin-bottom: 24px;">
+                <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 6px 20px rgba(255,107,44,0.3);">🔧</div>
+                <span style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800;">AutoCare Pro</span>
+            </div>
+            <h2 style="font-size: 28px; margin-bottom: 8px;">Create Account</h2>
+            <p style="color: var(--text-muted); font-size: 14px;">Join the future of car maintenance management.</p>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="name">Full Name</label>
+            <input type="text" id="name" class="input-field" placeholder="John Doe">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input type="email" id="email" class="input-field" placeholder="you@example.com">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="phone">Phone Number</label>
+            <input type="tel" id="phone" class="input-field" placeholder="+91 98765 43210">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 32px;">
+            <label class="form-label" for="password">Password</label>
+            <input type="password" id="password" class="input-field" placeholder="••••••••">
+        </div>
+
+        <button class="btn-primary" id="registerBtn" onclick="register()">🚗 Create Account</button>
+
+        <div id="msg" class="msg"></div>
+
+        <div style="margin-top: 28px; text-align: center; font-size: 14px; color: var(--text-secondary);">
+            Already have an account? <a href="index.html" class="link-btn">Sign in here</a>
+        </div>
     </div>
 </div>
 
 <script src="app.js"></script>
 <script>
     async function register() {
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const phone = document.getElementById('phone').value;
-      const password = document.getElementById('password').value;
-      const msg = document.getElementById('msg');
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const password = document.getElementById('password').value;
+        const msg = document.getElementById('msg');
 
-      if (!name || !email || !password) {
-        msg.textContent = 'Name, email, and password are required!';
-        msg.className = 'msg error-msg';
-        return;
-      }
-
-      const user = { name, email, phone, password };
-
-      try {
-        const res = await fetch(`${API_BASE}/users/register`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(user)
-        });
-
-        if (res.ok) {
-          msg.textContent = 'Account created! Redirecting to login...';
-          msg.className = 'msg success-msg';
-          setTimeout(() => window.location.href = 'index.html', 1500);
-        } else {
-          msg.textContent = 'Registration failed. Please try again.';
-          msg.className = 'msg error-msg';
+        if (!name || !email || !phone || !password) {
+            msg.textContent = 'All fields are required.';
+            msg.className = 'msg error';
+            return;
         }
-      } catch (error) {
-        msg.textContent = 'Connection error. Is the server running?';
-        msg.className = 'msg error-msg';
-      }
+
+        try {
+            const res = await fetch(`${API_BASE}/users/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, phone, password })
+            });
+
+            if (res.ok) {
+                msg.textContent = '✓ Account created! Redirecting to login...';
+                msg.className = 'msg success';
+                setTimeout(() => window.location.href = 'index.html', 1500);
+            } else {
+                msg.textContent = 'Registration failed. Email may already exist.';
+                msg.className = 'msg error';
+            }
+        } catch (error) {
+            msg.textContent = 'Connection error. Is the server running?';
+            msg.className = 'msg error';
+        }
     }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') register();
+    });
 </script>
 </body>
 </html>

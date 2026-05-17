@@ -3,101 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Management — Caring for Your Journey</title>
+    <title>AutoCare Pro — Premium Car Service & Maintenance</title>
+    <meta name="description" content="Professional car service and maintenance management. Book services, track repairs, and keep your vehicle in peak condition.">
     <link rel="stylesheet" href="style.css">
-    <style>
-        h1, h2, h3 { font-family: 'Bodoni Moda', serif; font-weight: 700; }
-        .natural-bg {
-            position: fixed; inset: 0;
-            background: radial-gradient(circle at 10% 20%, rgba(78, 108, 80, 0.03) 0%, transparent 40%),
-                        radial-gradient(circle at 90% 80%, rgba(170, 139, 86, 0.03) 0%, transparent 40%);
-            z-index: -1;
-        }
-        .auth-hero-title { font-size: clamp(2.5rem, 5vw, 4.5rem); line-height: 1.1; margin-bottom: 24px; }
-        .auth-sheet {
-            background: var(--bg-sheet); padding: 50px; border-radius: var(--radius-md);
-            box-shadow: 0 20px 50px rgba(44, 51, 51, 0.05); border: 1px solid var(--border-light);
-        }
-        .btn-humane {
-            background: var(--accent); color: white; padding: 16px 32px; border: none; border-radius: 40px;
-            font-weight: 600; cursor: pointer; transition: var(--transition-smooth); font-family: 'Jost', sans-serif;
-        }
-        .btn-humane:hover { background: var(--accent-warm); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(170, 139, 86, 0.2); }
-    </style>
 </head>
 <body>
 
-<div class="natural-bg"></div>
+<div class="ambient-bg"></div>
+<div class="grid-pattern"></div>
 
 <div class="viewport-center">
     <main class="auth-grid">
+        <!-- Left Hero -->
         <div class="auth-hero animate-fade">
+            <div style="display: inline-flex; align-items: center; gap: 12px; margin-bottom: 32px;">
+                <div style="width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 8px 24px rgba(255,107,44,0.3);">🔧</div>
+                <div>
+                    <div style="font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 800; color: var(--text-primary);">AutoCare Pro</div>
+                    <div style="font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase;">Service & Maintenance</div>
+                </div>
+            </div>
+
             <h1 class="auth-hero-title">
-                Honest Care for<br>
-                <span style="font-style: italic; color: var(--accent-warm);">Every Journey.</span>
+                Expert Care for<br>
+                <span class="accent">Your Vehicle.</span>
             </h1>
-            <p style="font-size: 19px; color: var(--text-slate); max-width: 460px; line-height: 1.7;">
-                At Car Management, we believe a well-kept car is part of a life well-lived. We’re here to help you stay on the road safely and simply.
+            <p style="font-size: 17px; color: var(--text-secondary); max-width: 440px; line-height: 1.7;">
+                From routine oil changes to full engine diagnostics — we keep your car running at peak performance. Track every service, every mile.
             </p>
-            <div style="margin-top: 40px; display: flex; gap: 20px; align-items: center;">
-                <div style="width: 50px; height: 1px; background: var(--accent-warm);"></div>
-                <span style="font-size: 13px; font-weight: 600; text-transform: uppercase; color: var(--accent-warm); letter-spacing: 0.1em;">Your Local Mechanic</span>
+
+            <div style="margin-top: 48px; display: flex; gap: 32px;">
+                <div style="text-align: center;">
+                    <div style="font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800; color: var(--accent);">500+</div>
+                    <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px;">Cars Serviced</div>
+                </div>
+                <div style="width: 1px; background: var(--border);"></div>
+                <div style="text-align: center;">
+                    <div style="font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800; color: var(--accent);">98%</div>
+                    <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px;">Satisfaction</div>
+                </div>
+                <div style="width: 1px; background: var(--border);"></div>
+                <div style="text-align: center;">
+                    <div style="font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800; color: var(--accent);">24/7</div>
+                    <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px;">Support</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; display: flex; gap: 16px; align-items: center;">
+                <div style="width: 40px; height: 2px; background: linear-gradient(90deg, var(--accent), transparent);"></div>
+                <span style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.1em;">Trusted Workshop Since 2010</span>
             </div>
         </div>
 
+        <!-- Right Auth Card -->
         <div class="auth-sheet animate-fade" style="animation-delay: 0.15s;">
+
+            <!-- LOGIN VIEW -->
             <div id="loginView">
-                <h2 style="font-size: 32px; margin-bottom: 12px;">Welcome back</h2>
-                <p style="color: var(--text-muted); margin-bottom: 40px; font-size: 15px;">Sign in to see how your car is doing.</p>
-                
-                <div style="margin-bottom: 24px;">
-                    <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">Email</label>
-                    <input type="email" id="email" class="input-field" placeholder="hello@yourmail.com">
+                <h2 style="font-size: 28px; margin-bottom: 8px;">Welcome Back</h2>
+                <p style="color: var(--text-muted); margin-bottom: 36px; font-size: 14px;">Sign in to check your service status & history.</p>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="email" class="input-field" placeholder="you@example.com">
                 </div>
 
-                <div style="margin-bottom: 40px;">
-                    <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">Password</label>
+                <div class="form-group" style="margin-bottom: 36px;">
+                    <label class="form-label">Password</label>
                     <input type="password" id="password" class="input-field" placeholder="••••••••">
                 </div>
 
-                <button class="btn-humane" style="width: 100%;" onclick="login()">
-                    Sign In to My Account
+                <button class="btn-primary" id="loginBtn" onclick="login()">
+                    🔑 Sign In to Dashboard
                 </button>
 
-                <div id="msg" style="margin-top: 24px; text-align: center; font-size: 14px; min-height: 20px;"></div>
+                <div id="msg" class="msg"></div>
 
-                <div style="margin-top: 40px; text-align: center; font-size: 14px; color: var(--text-slate);">
-                    First time here? <button style="background:none; border:none; color:var(--accent); font-weight:700; cursor:pointer; text-decoration: underline;" onclick="toggleView('register')">Join our community</button>
+                <div style="margin-top: 32px; text-align: center; font-size: 14px; color: var(--text-secondary);">
+                    New customer? <button class="link-btn" onclick="toggleView('register')">Create an account</button>
                 </div>
             </div>
 
+            <!-- REGISTER VIEW -->
             <div id="registerView" style="display: none;">
-                <h2 style="font-size: 32px; margin-bottom: 12px;">Create an account</h2>
-                <p style="color: var(--text-muted); margin-bottom: 32px; font-size: 15px;">Start your journey toward stress-free car care.</p>
-                
-                <div style="margin-bottom: 20px;">
-                    <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">Your Name</label>
-                    <input type="text" id="regName" class="input-field" placeholder="Full name">
+                <h2 style="font-size: 28px; margin-bottom: 8px;">Create Account</h2>
+                <p style="color: var(--text-muted); margin-bottom: 32px; font-size: 14px;">Register to book services and track your vehicle maintenance.</p>
+
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="regName" class="input-field" placeholder="John Doe">
                 </div>
 
-                <div style="margin-bottom: 20px;">
-                    <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">Email</label>
-                    <input type="email" id="regEmail" class="input-field" placeholder="email@address.com">
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="regEmail" class="input-field" placeholder="you@example.com">
                 </div>
 
-                <div style="margin-bottom: 32px;">
-                    <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">Create Password</label>
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" id="regPhone" class="input-field" placeholder="+91 98765 43210">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 32px;">
+                    <label class="form-label">Create Password</label>
                     <input type="password" id="regPassword" class="input-field" placeholder="••••••••">
                 </div>
 
-                <button class="btn-humane" style="width: 100%;" onclick="register()">
-                    Create My Account
+                <button class="btn-primary" id="registerBtn" onclick="register()">
+                    🚗 Create My Account
                 </button>
 
-                <div id="regMsg" style="margin-top: 20px; text-align: center; font-size: 14px; min-height: 20px;"></div>
+                <div id="regMsg" class="msg"></div>
 
-                <div style="margin-top: 32px; text-align: center; font-size: 14px; color: var(--text-slate);">
-                    Already have an account? <button style="background:none; border:none; color:var(--accent); font-weight:700; cursor:pointer; text-decoration: underline;" onclick="toggleView('login')">Sign in here</button>
+                <div style="margin-top: 28px; text-align: center; font-size: 14px; color: var(--text-secondary);">
+                    Already a customer? <button class="link-btn" onclick="toggleView('login')">Sign in here</button>
                 </div>
             </div>
         </div>
@@ -109,13 +128,20 @@
     function toggleView(v) {
         document.getElementById('loginView').style.display = v === 'login' ? 'block' : 'none';
         document.getElementById('registerView').style.display = v === 'register' ? 'block' : 'none';
+        // Clear messages
+        document.getElementById('msg').textContent = '';
+        document.getElementById('regMsg').textContent = '';
     }
 
     async function login() {
-        const email = document.getElementById('email').value;
+        const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
         const msg = document.getElementById('msg');
-        if (!email || !password) { msg.textContent = 'Please fill in your details.'; return; }
+        if (!email || !password) {
+            msg.textContent = 'Please enter your email and password.';
+            msg.className = 'msg error';
+            return;
+        }
 
         try {
             const res = await fetch(`${API_BASE}/users/login`, {
@@ -126,44 +152,64 @@
             if (res.ok) {
                 const user = await res.json();
                 setLoggedUser(user);
-                msg.textContent = 'Welcome back! Redirecting...';
-                msg.style.color = 'var(--accent)';
+                msg.textContent = '✓ Welcome back! Redirecting...';
+                msg.className = 'msg success';
                 setTimeout(() => {
                     window.location.href = user.role === 'ADMIN' ? 'admin-dashboard.html' : 'user-dashboard.html';
                 }, 1000);
             } else {
-                msg.textContent = 'We couldn’t find an account with those details.';
-                msg.style.color = '#B91C1C';
+                msg.textContent = 'Invalid credentials. Please try again.';
+                msg.className = 'msg error';
             }
         } catch (e) {
-            msg.textContent = 'Something went wrong on our end.';
+            msg.textContent = 'Connection error. Is the server running?';
+            msg.className = 'msg error';
         }
     }
 
     async function register() {
-        const name = document.getElementById('regName').value;
-        const email = document.getElementById('regEmail').value;
+        const name = document.getElementById('regName').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const phone = document.getElementById('regPhone').value.trim();
         const password = document.getElementById('regPassword').value;
         const msg = document.getElementById('regMsg');
-        if (!name || !email || !password) { msg.textContent = 'All fields are needed.'; return; }
+
+        if (!name || !email || !phone || !password) {
+            msg.textContent = 'All fields are required.';
+            msg.className = 'msg error';
+            return;
+        }
 
         try {
             const res = await fetch(`${API_BASE}/users/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, password })
+                body: JSON.stringify({ name, email, phone, password })
             });
             if (res.ok) {
-                msg.textContent = 'Success! You can now sign in.';
-                msg.style.color = 'var(--accent)';
+                msg.textContent = '✓ Account created! Redirecting to sign in...';
+                msg.className = 'msg success';
                 setTimeout(() => toggleView('login'), 1500);
             } else {
-                msg.textContent = 'We couldn’t create your account right now.';
+                msg.textContent = 'Registration failed. Email may already exist.';
+                msg.className = 'msg error';
             }
         } catch (e) {
-            msg.textContent = 'Connection error.';
+            msg.textContent = 'Connection error. Is the server running?';
+            msg.className = 'msg error';
         }
     }
+
+    // Allow Enter key to submit
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            if (document.getElementById('loginView').style.display !== 'none') {
+                login();
+            } else {
+                register();
+            }
+        }
+    });
 </script>
 </body>
 </html>

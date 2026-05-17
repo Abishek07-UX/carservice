@@ -3,68 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Dashboard — Car Management</title>
+    <title>My Dashboard — AutoCare Pro</title>
+    <meta name="description" content="Track your vehicle service history, book appointments, and manage your car maintenance.">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="dashboard-layout">
+    <!-- Sidebar -->
     <aside class="sidebar">
-        <div style="margin-bottom: 48px;">
-            <h1 style="font-size: 24px; color: var(--text-dark);">Car Management</h1>
+        <div class="sidebar-brand">
+            <div class="brand-icon">🔧</div>
+            <div class="brand-text">
+                <h1>AutoCare Pro</h1>
+                <span>Customer Portal</span>
+            </div>
         </div>
 
+        <div class="nav-section-label">Services</div>
         <nav>
-            <a href="#" class="nav-link active">My Vehicles</a>
-            <a href="#" class="nav-link" onclick="alert('Coming soon')">Service History</a>
-            <a href="#" class="nav-link" onclick="alert('Coming soon')">Book a Service</a>
-            <a href="#" class="nav-link" onclick="alert('Coming soon')">Talk to Us</a>
+            <a href="#" class="nav-link active">
+                <span class="nav-icon">🏠</span> Dashboard
+            </a>
+            <a href="#" class="nav-link" onclick="alert('Coming soon')">
+                <span class="nav-icon">🚗</span> My Vehicles
+            </a>
+            <a href="#" class="nav-link" onclick="alert('Coming soon')">
+                <span class="nav-icon">📋</span> Service History
+            </a>
+            <a href="#" class="nav-link" onclick="alert('Coming soon')">
+                <span class="nav-icon">📅</span> Book a Service
+            </a>
         </nav>
 
-        <div style="margin-top: auto;">
-            <a href="edit-profile.html" class="nav-link">My Profile</a>
-            <a href="#" class="nav-link" onclick="logout()" style="color: #B91C1C;">Sign Out</a>
-        </div>
+        <div class="nav-section-label" style="margin-top: auto;">Account</div>
+        <a href="edit-profile.html" class="nav-link">
+            <span class="nav-icon">👤</span> My Profile
+        </a>
+        <a href="#" class="nav-link logout" onclick="logout()">
+            <span class="nav-icon">🚪</span> Sign Out
+        </a>
     </aside>
 
+    <!-- Main Content -->
     <main class="main-content">
-        <header style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px;">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 48px;" class="animate-fade">
             <div>
-                <h2 style="font-size: 36px;" id="welcomeTitle">Hello, Friend</h2>
-                <p style="color: var(--text-slate); margin-top: 8px;">Let's make sure your car is ready for the road.</p>
+                <h2 style="font-size: 32px;" id="welcomeTitle">Hello, Friend</h2>
+                <p style="color: var(--text-secondary); margin-top: 8px; font-size: 15px;">Your vehicle deserves the best care. Let's keep it running perfectly.</p>
             </div>
-            
-            <div style="text-align: right;">
-                <p id="userName" style="font-weight: 700; font-size: 18px;">Name</p>
-                <p id="userEmail" style="font-size: 13px; color: var(--text-muted);">email@example.com</p>
-            </div>
-        </header>
-
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 60px;">
-            <div class="stat-card">
-                <p style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Vehicles</p>
-                <div style="font-size: 32px; font-weight: 700; margin-top: 8px;">01</div>
-            </div>
-            <div class="stat-card">
-                <p style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Last Check</p>
-                <div style="font-size: 32px; font-weight: 700; margin-top: 8px;">—</div>
-            </div>
-            <div class="stat-card">
-                <p style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Health</p>
-                <div style="font-size: 32px; font-weight: 700; margin-top: 8px; color: var(--accent-warm);">Good</div>
+            <div style="text-align: right; padding: 16px 24px; background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border);">
+                <p id="userName" style="font-weight: 700; font-size: 16px; color: var(--text-primary);">Name</p>
+                <p id="userEmail" style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">email@example.com</p>
+                <p id="userPhone" style="font-size: 12px; color: var(--text-muted); margin-top: 2px;"></p>
             </div>
         </div>
 
-        <section class="animate-fade">
-            <h3 style="font-size: 24px; margin-bottom: 24px;">Recommended for You</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                <div class="stat-card" style="cursor: pointer;" onclick="alert('Coming soon')">
-                    <h4 style="font-size: 18px; margin-bottom: 8px; color: var(--accent);">Seasonal Tune-up</h4>
-                    <p style="font-size: 14px; color: var(--text-slate); line-height: 1.6;">Ensure your vehicle is prepared for the changing weather and long drives ahead.</p>
+        <!-- Stats -->
+        <div class="stats-grid stagger">
+            <div class="stat-card animate-fade">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <div class="stat-label">Vehicles</div>
+                        <div class="stat-value">01</div>
+                    </div>
+                    <span style="font-size: 32px; opacity: 0.3;">🚗</span>
                 </div>
-                <div class="stat-card" style="cursor: pointer;" onclick="alert('Coming soon')">
-                    <h4 style="font-size: 18px; margin-bottom: 8px; color: var(--accent);">Oil & Filter Care</h4>
-                    <p style="font-size: 14px; color: var(--text-slate); line-height: 1.6;">The simplest way to keep your engine running smoothly for years to come.</p>
+            </div>
+            <div class="stat-card animate-fade">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <div class="stat-label">Last Service</div>
+                        <div class="stat-value" style="font-size: 24px;">—</div>
+                    </div>
+                    <span style="font-size: 32px; opacity: 0.3;">📅</span>
+                </div>
+            </div>
+            <div class="stat-card animate-fade">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <div class="stat-label">Vehicle Health</div>
+                        <div class="stat-value success">Good</div>
+                    </div>
+                    <span style="font-size: 32px; opacity: 0.3;">💚</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommended Services -->
+        <section class="animate-fade" style="animation-delay: 0.3s;">
+            <h3 style="font-size: 22px; margin-bottom: 20px;">Recommended Services</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+                <div class="feature-card" onclick="alert('Coming soon')">
+                    <div class="feature-icon">🛢️</div>
+                    <h4>Oil & Filter Change</h4>
+                    <p>Keep your engine running smooth with regular oil changes and fresh filters.</p>
+                </div>
+                <div class="feature-card" onclick="alert('Coming soon')">
+                    <div class="feature-icon">🔋</div>
+                    <h4>Battery Check</h4>
+                    <p>Don't get stranded — test your battery health and ensure reliable starts.</p>
+                </div>
+                <div class="feature-card" onclick="alert('Coming soon')">
+                    <div class="feature-icon">🛞</div>
+                    <h4>Tire Rotation</h4>
+                    <p>Even out wear and extend tire life with a professional rotation service.</p>
+                </div>
+                <div class="feature-card" onclick="alert('Coming soon')">
+                    <div class="feature-icon">❄️</div>
+                    <h4>AC Service</h4>
+                    <p>Stay cool on the road with a full air conditioning check and recharge.</p>
                 </div>
             </div>
         </section>
@@ -76,9 +125,10 @@
     requireAuth();
     const user = getLoggedUser();
 
-    document.getElementById('welcomeTitle').textContent = `Hello, ${user.name.split(' ')[0]}`;
+    document.getElementById('welcomeTitle').textContent = `Hello, ${user.name.split(' ')[0]} 👋`;
     document.getElementById('userName').textContent = user.name;
     document.getElementById('userEmail').textContent = user.email;
+    document.getElementById('userPhone').textContent = user.phone || '';
 </script>
 </body>
 </html>
