@@ -27,8 +27,8 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    // READ — GET /api/users/1
-    @GetMapping("/{id}")
+    // READ — GET /api/users/
+    @GetMapping("/{name}")
     public ResponseEntity<User> getById(@PathVariable String name) {
         return userService.getUserByName(name)
                 .map(ResponseEntity::ok)
@@ -37,7 +37,7 @@ public class UserController {
     // READ — get one user by email
     @GetMapping("/email/{email}")
     public ResponseEntity<User> getByEmail(@PathVariable String email) {
-        return userService.getUserById(email)
+        return userService.getUserByEmail(email)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

@@ -35,7 +35,7 @@ public class UserService {
         return userRepository.findByName(name);}
 
     // READ — get one user by Email instead of ID
-    public Optional<User> getUserById(String email) {
+    public Optional<User> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
