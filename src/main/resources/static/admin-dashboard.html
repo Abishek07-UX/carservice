@@ -2,131 +2,159 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
-    <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:Arial,sans-serif; background:#f0f2f5; padding:30px; }
-        .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
-        .header h2 { color:#333; }
-        .logout { background:#E24B4A; color:#fff; border:none;
-                  padding:8px 18px; border-radius:6px; cursor:pointer; font-size:14px; }
-        .logout:hover { background:#A32D2D; }
-        .stats { display:flex; gap:16px; margin-bottom:24px; }
-        .stat-card { background:#fff; border-radius:10px; padding:20px 28px;
-                     box-shadow:0 2px 8px rgba(0,0,0,0.08); flex:1; text-align:center; }
-        .stat-card h3 { font-size:28px; color:#378ADD; }
-        .stat-card p { font-size:13px; color:#888; margin-top:4px; }
-        table { width:100%; background:#fff; border-radius:10px;
-                box-shadow:0 2px 8px rgba(0,0,0,0.08); border-collapse:collapse; }
-        th { background:#378ADD; color:#fff; padding:12px 16px; text-align:left; }
-        td { padding:12px 16px; border-bottom:1px solid #eee; font-size:14px; }
-        tr:hover { background:#f9f9f9; }
-        .del-btn { background:#E24B4A; color:#fff; border:none;
-                   padding:6px 12px; border-radius:4px; cursor:pointer; font-size:13px; margin-right:6px; }
-        .del-btn:hover { background:#A32D2D; }
-        .promote-btn { background:#534AB7; color:#fff; border:none;
-                       padding:6px 12px; border-radius:4px; cursor:pointer; font-size:13px; margin-right:6px; }
-        .promote-btn:hover { background:#3C3489; }
-        .demote-btn { background:#BA7517; color:#fff; border:none;
-                      padding:6px 12px; border-radius:4px; cursor:pointer; font-size:13px; }
-        .demote-btn:hover { background:#633806; }
-        .badge { padding:3px 10px; border-radius:12px; font-size:12px; font-weight:500; }
-        .ADMIN { background:#EEEDFE; color:#3C3489; }
-        .USER  { background:#E1F5EE; color:#085041; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workshop Management — AutoCare Pro</title>
+    <meta name="description" content="Admin dashboard for managing customers, services, and workshop operations.">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="header">
-    <h2>Admin Dashboard</h2>
-    <button class="logout" onclick="logout()">Logout</button>
+
+<div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">🔧</div>
+            <div class="brand-text">
+                <h1>AutoCare Pro</h1>
+                <span>Workshop Panel</span>
+            </div>
+        </div>
+
+        <div class="nav-section-label">Management</div>
+        <nav>
+            <a href="#" class="nav-link active">
+                <span class="nav-icon">👥</span> Customers
+            </a>
+            <a href="#" class="nav-link" onclick="alert('Coming soon')">
+                <span class="nav-icon">📅</span> Service Calendar
+            </a>
+            <a href="#" class="nav-link" onclick="alert('Coming soon')">
+                <span class="nav-icon">🔩</span> Work Orders
+            </a>
+            <a href="#" class="nav-link" onclick="alert('Coming soon')">
+                <span class="nav-icon">📊</span> Reports
+            </a>
+        </nav>
+
+        <div class="nav-section-label" style="margin-top: auto;">Account</div>
+        <a href="#" class="nav-link logout" onclick="logout()" style="border:none; background:none; width:100%; text-align:left; cursor:pointer;">
+            <span class="nav-icon">🚪</span> Sign Out
+        </a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header animate-fade">
+            <h2>Workshop Dashboard</h2>
+            <p>Manage your customers and keep the workshop running smoothly.</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid stagger">
+            <div class="stat-card animate-fade">
+                <div class="stat-label">Total Customers</div>
+                <div class="stat-value" id="totalUsers">0</div>
+            </div>
+            <div class="stat-card animate-fade">
+                <div class="stat-label">Team Members</div>
+                <div class="stat-value accent" id="totalAdmins">0</div>
+            </div>
+            <div class="stat-card animate-fade">
+                <div class="stat-label">Workshop Status</div>
+                <div class="stat-value success">Active</div>
+            </div>
+        </div>
+
+        <!-- Table Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;" class="animate-fade" style="animation-delay: 0.3s;">
+            <h3 style="font-size: 20px;">Customer Registry</h3>
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" class="input-field" placeholder="Search customers...">
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="data-table-wrapper animate-fade" style="animation-delay: 0.35s;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTable"></tbody>
+            </table>
+        </div>
+    </main>
 </div>
 
-<div class="stats">
-    <div class="stat-card">
-        <h3 id="totalUsers">0</h3>
-        <p>Total Users</p>
-    </div>
-    <div class="stat-card">
-        <h3 id="totalAdmins">0</h3>
-        <p>Total Admins</p>
-    </div>
-    <div class="stat-card">
-        <h3 id="totalRegular">0</h3>
-        <p>Regular Users</p>
-    </div>
-</div>
-
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Phone</th>
-        <th>Role</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody id="userTable"></tbody>
-</table>
-
+<script src="app.js"></script>
 <script>
-    const admin = JSON.parse(localStorage.getItem('loggedUser'));
-    if (!admin || admin.role !== 'ADMIN') {
-      window.location.href = 'index.html';
-    }
+    requireAdmin();
+    let allUsers = [];
 
     async function loadUsers() {
-      const res = await fetch('http://localhost:8080/api/users');
-      const users = await res.json();
+        try {
+            const res = await fetch(`${API_BASE}/users`);
+            allUsers = await res.json();
 
-      document.getElementById('totalUsers').textContent   = users.length;
-      document.getElementById('totalAdmins').textContent  = users.filter(u => u.role === 'ADMIN').length;
-      document.getElementById('totalRegular').textContent = users.filter(u => u.role === 'USER').length;
+             const customers = allUsers.filter(u => u.role === 'USER');
+             const admins = allUsers.filter(u => u.role === 'ADMIN');
 
-      const tbody = document.getElementById('userTable');
-      tbody.innerHTML = users.map(u => `
-        <tr>
-          <td>${u.id}</td>
-          <td>${u.name}</td>
-          <td>${u.email}</td>
-          <td>${u.phone || '-'}</td>
-          <td><span class="badge ${u.role}">${u.role}</span></td>
-          <td>
-            ${u.role === 'USER'
-              ? `<button class="promote-btn" onclick="changeRole(${u.id}, 'ADMIN')">Make Admin</button>`
-              : `<button class="demote-btn"  onclick="changeRole(${u.id}, 'USER')">Make User</button>`
-            }
-            <button class="del-btn" onclick="deleteUser(${u.id})">Delete</button>
-          </td>
-        </tr>
-      `).join('');
+             document.getElementById('totalUsers').textContent = customers.length;
+             document.getElementById('totalAdmins').textContent = admins.length;
+
+            renderTable(allUsers);
+        } catch (e) {
+            console.error('Failed to load customers', e);
+        }
     }
 
+    function renderTable(users) {
+        const tbody = document.getElementById('userTable');
+        tbody.innerHTML = users.map(u => `
+            <tr>
+                <td><span class="user-name">${u.name}</span></td>
+                <td>${u.email}</td>
+                <td>${u.phone || '—'}</td>
+                <td><span class="role-badge ${u.role.toLowerCase()}">${u.role}</span></td>
+                <td>
+                    <div class="table-actions">
+                        <button class="btn-pill" onclick="changeRole(${u.id}, '${u.role === 'USER' ? 'ADMIN' : 'USER'}')">
+                            ${u.role === 'USER' ? '⬆ Promote' : '⬇ Demote'}
+                        </button>
+                        <button class="btn-pill danger" onclick="deleteUser(${u.id})">✕ Remove</button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // Search logic
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allUsers.filter(u =>
+            u.name.toLowerCase().includes(term) ||
+            u.email.toLowerCase().includes(term) ||
+            (u.phone && u.phone.toLowerCase().includes(term))
+        );
+        renderTable(filtered);
+    });
+
     async function changeRole(id, newRole) {
-      const action = newRole === 'ADMIN' ? 'promote to Admin' : 'demote to User';
-      if (!confirm(`Are you sure you want to ${action}?`)) return;
-
-      const res = await fetch(`http://localhost:8080/api/users/${id}/role?role=${newRole}`, {
-        method: 'PUT'
-      });
-
-      if (res.ok) {
-        loadUsers();
-      } else {
-        alert('Failed to change role!');
-      }
+        if (!confirm(`Update this user's role to ${newRole}?`)) return;
+        const res = await fetch(`${API_BASE}/users/${id}/role?role=${newRole}`, { method: 'PUT' });
+        if (res.ok) loadUsers();
     }
 
     async function deleteUser(id) {
-      if (!confirm('Are you sure you want to delete this user?')) return;
-      await fetch(`http://localhost:8080/api/users/${id}`, { method: 'DELETE' });
-      loadUsers();
-    }
-
-    function logout() {
-      localStorage.removeItem('loggedUser');
-      window.location.href = 'index.html';
+        if (!confirm('Permanently remove this customer?')) return;
+        await fetch(`${API_BASE}/users/${id}`, { method: 'DELETE' });
+        loadUsers();
     }
 
     loadUsers();
