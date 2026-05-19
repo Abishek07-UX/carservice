@@ -174,8 +174,35 @@
         const password = document.getElementById('regPassword').value;
         const msg = document.getElementById('regMsg');
 
+        // Client-side validations
         if (!name || !email || !phone || !password) {
             msg.textContent = 'All fields are required.';
+            msg.className = 'msg error';
+            return;
+        }
+
+        if (name.length < 2 || name.length > 50) {
+            msg.textContent = 'Name must be between 2 and 50 characters.';
+            msg.className = 'msg error';
+            return;
+        }
+
+        const emailRegex = /^\S+@\S+\.\S+$/;
+        if (!emailRegex.test(email)) {
+            msg.textContent = 'Please enter a valid email address.';
+            msg.className = 'msg error';
+            return;
+        }
+
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(phone)) {
+            msg.textContent = 'Phone number must be exactly 10 digits.';
+            msg.className = 'msg error';
+            return;
+        }
+
+        if (password.length < 6) {
+            msg.textContent = 'Password must be at least 6 characters.';
             msg.className = 'msg error';
             return;
         }
@@ -191,7 +218,21 @@
                 msg.className = 'msg success';
                 setTimeout(() => toggleView('login'), 1500);
             } else {
-                msg.textContent = 'Registration failed. Email may already exist.';
+                let errorMsg = 'Registration failed. Please check your details.';
+                try {
+                    const errorData = await res.json();
+                    if (Array.isArray(errorData)) {
+                        errorMsg = errorData.join('\n');
+                    } else if (typeof errorData === 'object' && errorData.message) {
+                        errorMsg = errorData.message;
+                    }
+                } catch (e) {
+                    const text = await res.text();
+                    if (text) errorMsg = text;
+                }
+                
+                msg.style.whiteSpace = 'pre-line';
+                msg.textContent = errorMsg;
                 msg.className = 'msg error';
             }
         } catch (e) {

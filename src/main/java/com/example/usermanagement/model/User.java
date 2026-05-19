@@ -2,7 +2,9 @@ package com.example.usermanagement.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import com.example.usermanagement.model.Role;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "users")
@@ -14,6 +16,8 @@ public class User extends Person {
     private Long id;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotBlank(message = "Password is required")
+    @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
     @Enumerated(EnumType.STRING)
