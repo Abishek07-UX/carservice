@@ -2,10 +2,13 @@ package com.example.usermanagement.controller;
 
 import com.example.usermanagement.model.User;
 import com.example.usermanagement.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -17,7 +20,17 @@ public class UserController {
 
     // CREATE — POST /api/users/register
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody User user) {
+    public ResponseEntity<?> register(@Valid @RequestBody User user, BindingResult result) {
+
+        // If validation fails, return all error messages
+        if (result.hasErrors()) {
+            List<String> errors = result.getFieldErrors()
+                    .stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .collect(Collectors.toList());
+            return ResponseEntity.badRequest().body(errors);
+        }
+
         return ResponseEntity.ok(userService.registerUser(user));
     }
 
@@ -29,7 +42,7 @@ public class UserController {
 
     // READ — GET /api/users/
     @GetMapping("/{name}")
-    public ResponseEntity<User> getById(@PathVariable String name) {
+    public ResponseEntity<User> getByName(@PathVariable String name) {
         return userService.getUserByName(name)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

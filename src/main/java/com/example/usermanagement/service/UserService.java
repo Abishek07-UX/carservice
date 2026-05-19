@@ -30,7 +30,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    // READ — get one user by id
+    // READ — get one user by Name
     public Optional<User> getUserByName(String name) {
         return userRepository.findByName(name);}
 
