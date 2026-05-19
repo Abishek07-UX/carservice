@@ -62,8 +62,35 @@
         const password = document.getElementById('password').value;
         const msg = document.getElementById('msg');
 
+        // Client-side validations
         if (!name || !email || !phone || !password) {
             msg.textContent = 'All fields are required.';
+            msg.className = 'msg error';
+            return;
+        }
+
+        if (name.length < 2 || name.length > 50) {
+            msg.textContent = 'Name must be between 2 and 50 characters.';
+            msg.className = 'msg error';
+            return;
+        }
+
+        const emailRegex = /^\S+@\S+\.\S+$/;
+        if (!emailRegex.test(email)) {
+            msg.textContent = 'Please enter a valid email address.';
+            msg.className = 'msg error';
+            return;
+        }
+
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(phone)) {
+            msg.textContent = 'Phone number must be exactly 10 digits.';
+            msg.className = 'msg error';
+            return;
+        }
+
+        if (password.length < 6) {
+            msg.textContent = 'Password must be at least 6 characters.';
             msg.className = 'msg error';
             return;
         }
@@ -80,7 +107,12 @@
                 msg.className = 'msg success';
                 setTimeout(() => window.location.href = 'index.html', 1500);
             } else {
-                msg.textContent = 'Registration failed. Email may already exist.';
+                const errorData = await res.json();
+                if (Array.isArray(errorData)) {
+                    msg.textContent = errorData.join(' | ');
+                } else {
+                    msg.textContent = 'Registration failed. Check your details or use a different email.';
+                }
                 msg.className = 'msg error';
             }
         } catch (error) {
