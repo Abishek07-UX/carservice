@@ -107,12 +107,24 @@
                 msg.className = 'msg success';
                 setTimeout(() => window.location.href = 'index.html', 1500);
             } else {
-                const errorData = await res.json();
-                if (Array.isArray(errorData)) {
-                    msg.textContent = errorData.join(' | ');
-                } else {
-                    msg.textContent = 'Registration failed. Check your details or use a different email.';
+                let errorMsg = 'Registration failed. Please check your details.';
+                try {
+                    const errorData = await res.json();
+                    if (Array.isArray(errorData)) {
+                        errorMsg = errorData.join('\n');
+                    } else if (typeof errorData === 'object' && errorData.message) {
+                        errorMsg = errorData.message;
+                    } else if (typeof errorData === 'string') {
+                        errorMsg = errorData;
+                    }
+                } catch (e) {
+                    // Fallback to text if JSON parsing fails
+                    const text = await res.text();
+                    if (text) errorMsg = text;
                 }
+                
+                msg.style.whiteSpace = 'pre-line';
+                msg.textContent = errorMsg;
                 msg.className = 'msg error';
             }
         } catch (error) {
