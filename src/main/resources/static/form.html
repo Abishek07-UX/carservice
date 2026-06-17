@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><title>Service Record Form – CarTracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{min-height:100vh;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#e2e8f0;font-family:'Inter',sans-serif}
+        nav{background:rgba(0,0,0,.3);backdrop-filter:blur(10px);padding:1rem 2rem;display:flex;gap:.5rem;align-items:center;border-bottom:1px solid rgba(255,255,255,.1);flex-wrap:wrap}
+        nav a{color:#e2e8f0;text-decoration:none;padding:.4rem .9rem;border-radius:6px;font-size:.88rem;transition:background .2s}nav a:hover{background:rgba(255,255,255,.1)}
+        .brand{font-weight:700;font-size:1rem;color:#a78bfa!important;margin-right:.5rem}
+        .container{max-width:800px;margin:0 auto;padding:2rem}
+        .ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}h1{font-size:1.6rem;font-weight:700}
+        .card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:2rem}
+        .fg{margin-bottom:1rem}label{display:block;margin-bottom:.35rem;font-size:.83rem;color:#94a3b8}
+        input,select,textarea{width:100%;padding:.6rem .9rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#e2e8f0;font-size:.88rem;outline:none;transition:border .2s}
+        input:focus,select:focus,textarea:focus{border-color:#7c3aed}select option{background:#1e1b4b;color:#e2e8f0}
+        .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+        .btn{display:inline-block;padding:.5rem 1.3rem;border-radius:8px;text-decoration:none;font-size:.88rem;font-weight:500;transition:all .2s;border:none;cursor:pointer}
+        .btn-primary{background:#7c3aed;color:#fff}.btn-primary:hover{background:#6d28d9}
+        .btn-info{background:#06b6d4;color:#fff}.actions{display:flex;gap:.8rem;margin-top:1.5rem}
+        .pay-method-btn{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);padding:.8rem 1.2rem;border-radius:10px;border:1px solid rgba(255,255,255,.15);cursor:pointer;transition:all .2s}.pay-method-btn:hover{background:rgba(255,255,255,.1)}.pay-method-btn input{width:auto}.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:100}.modal-content{background:#1e1b4b;padding:2rem;border-radius:15px;width:100%;max-width:400px;border:1px solid rgba(255,255,255,.2)}
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: nav}"></div>
+<div class="container">
+    <div class="ph">
+        <h1 th:text="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN' ? (record.id != null ? 'Edit Record' : 'New Service Record') : 'Book New Service'}">Form</h1>
+        <a href="/service-records" class="btn btn-info">← Back</a>
+    </div>
+    <div class="card">
+        <form th:action="${record.id != null ? '/service-records/' + record.id + '/update' : '/service-records/save'}"
+              method="post" th:object="${record}" enctype="multipart/form-data">
+            <input type="hidden" th:field="*{id}"/>
+            <div class="fg">
+                <label>Select Car</label>
+                <select name="carId" required>
+                    <option value="">-- Choose your car --</option>
+                    <option th:each="c : ${cars}" th:value="${c.id}"
+                            th:text="${c.make + ' ' + c.model + ' (' + c.licensePlate + ')'}"
+                            th:selected="${record.car != null and record.car.id == c.id}"></option>
+                </select>
+            </div>
+            <div class="grid2">
+                <div class="fg"><label>Service Type</label><input th:field="*{serviceType}" placeholder="e.g. Oil Change, Full Service" required/></div>
+                <div class="fg"><label>Preferred Date</label><input type="date" th:field="*{date}" required/></div>
+
+                <!-- Admin Only Fields -->
+                <div class="fg" th:if="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN'}">
+                    <label>Cost (Rs.)</label><input type="number" step="0.01" th:field="*{cost}" placeholder="0.00"/>
+                </div>
+                <div class="fg" th:if="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN'}">
+                    <label>Status</label>
+                    <select th:field="*{status}">
+                        <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="fg"><label>Special Instructions / Description</label><textarea th:field="*{description}" rows="3" placeholder="Describe what needs attention..."></textarea></div>
+
+            <!-- Admin Only Field -->
+            <div class="fg" th:if="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN'}">
+                <label>Invoice PDF (Optional)</label>
+                <input type="file" name="invoiceFile" accept=".pdf" style="padding: 0.4rem;"/>
+                <p th:if="${record.invoicePath != null}" style="font-size: 0.75rem; color: #10b981; margin-top: 0.3rem;">
+                    Current invoice: <span th:text="${record.invoicePath}"></span>
+                </p>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn btn-primary" th:text="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN' ? '💾 Save Record' : '📅 Book Service'}">Save</button>
+                <a href="/service-records" class="btn btn-info">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><title>Service Records – CarTracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{min-height:100vh;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#e2e8f0;font-family:'Inter',sans-serif}
+        nav{background:rgba(0,0,0,.3);backdrop-filter:blur(10px);padding:1rem 2rem;display:flex;gap:.5rem;align-items:center;border-bottom:1px solid rgba(255,255,255,.1);flex-wrap:wrap}
+        nav a{color:#e2e8f0;text-decoration:none;padding:.4rem .9rem;border-radius:6px;font-size:.88rem;transition:background .2s}nav a:hover{background:rgba(255,255,255,.1)}
+        .brand{font-weight:700;font-size:1rem;color:#a78bfa!important;margin-right:.5rem}
+        .container{max-width:1300px;margin:0 auto;padding:2rem}
+        .ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}h1{font-size:1.6rem;font-weight:700}
+        .card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:1.5rem}
+        table{width:100%;border-collapse:collapse}th,td{padding:.75rem 1rem;text-align:left;border-bottom:1px solid rgba(255,255,255,.08);font-size:.85rem}
+        th{color:#94a3b8;font-weight:500;text-transform:uppercase;font-size:.72rem;letter-spacing:.06em}tr:hover td{background:rgba(255,255,255,.03)}
+        .btn{display:inline-block;padding:.45rem 1rem;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:500;transition:all .2s;border:none;cursor:pointer}
+        .btn-primary{background:#7c3aed;color:#fff}.btn-warning{background:#f59e0b;color:#fff}.btn-danger{background:#ef4444;color:#fff}
+        .btn-success{background:#10b981;color:#fff}.btn-sm{padding:.26rem .6rem;font-size:.76rem}
+        .badge{padding:.22rem .65rem;border-radius:999px;font-size:.72rem;font-weight:600}
+        .bp{background:rgba(245,158,11,.2);color:#f59e0b}.bc{background:rgba(16,185,129,.2);color:#10b981}
+        .empty{text-align:center;padding:3rem;color:#94a3b8}
+        .btn-pdf{background:rgba(124,58,237,.2);color:#a78bfa;border:1px solid rgba(167,139,250,.3);padding:.45rem 1rem;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.5rem;transition:all .2s;text-decoration:none}
+        .btn-pdf:hover{background:#7c3aed;color:#fff;transform:translateY(-2px)}
+        .btn-report{padding: 4px 8px; font-size: 11px; border-radius: 6px; display: flex; align-items:center; gap: 4px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; text-decoration: none; transition: 0.2s; cursor: pointer; line-height: 1;}
+        .btn-report:hover{background: #7c3aed; border-color: #7c3aed; transform: translateY(-1px);}
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: nav}"></div>
+<div class="container">
+    <div class="ph">
+        <h1>🔧 Service Records</h1>
+        <div style="display:flex; gap:0.8rem; align-items:center;">
+            <a th:if="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN'}" href="/service-records/new" class="btn btn-primary">+ New Record</a>
+        </div>
+    </div>
+    <div class="card">
+        <table id="serviceHistoryTable">
+            <thead>
+            <tr>
+                <th>ID</th><th>Car</th><th>Service Type</th><th>Description</th>
+                <th>Date</th><th>Cost</th><th>Status</th><th>Invoice</th>
+                <th th:unless="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN'}">Vehicle Reports 📊</th>
+                <th th:if="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN'}">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(records)}">
+                <td colspan="10" class="empty">No records yet. <a href="/service-records/new" style="color:#7c3aed">Add one!</a></td>
+            </tr>
+            <tr th:each="r : ${records}">
+                <td th:text="${r.id}"></td>
+                <td th:text="${r.car != null ? r.car.make + ' ' + r.car.model : '—'}"></td>
+                <td th:text="${r.serviceType}"></td>
+                <td th:text="${r.description}"></td>
+                <td th:text="${r.date}"></td>
+                <td th:text="${r.cost != null ? 'Rs. ' + r.cost : '—'}"></td>
+                <td>
+            <span th:class="${(r.status != null and r.status.name() == 'PENDING') ? 'badge bp' : 'badge bc'}"
+                  th:text="${r.status != null ? r.status : '—'}"></span>
+                </td>
+                <td style="min-width: 180px;">
+                    <div th:if="${r.invoicePath != null}" style="display:flex; gap:0.4rem;">
+                        <a th:href="@{/service-records/download/{file}(file=${r.invoicePath})}"
+                           class="btn btn-success btn-sm" target="_blank" style="padding: 4px 8px; font-size: 11px;">👁️ View</a>
+                        <a th:href="@{/service-records/download/{file}(file=${r.invoicePath}, download=true)}"
+                           class="btn btn-primary btn-sm" style="padding: 4px 8px; font-size: 11px; background: #3b82f6;">💾 Download</a>
+                    </div>
+                    <span th:if="${r.invoicePath == null}" class="badge bp">Pending Invoice</span>
+                </td>
+                <td th:unless="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN'}">
+                    <div th:if="${r.car != null}" style="display:flex; flex-direction:column; gap: 0.4rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:4px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.05);">
+                            <span style="font-size:10px;">⭐ History</span>
+                            <div style="display:flex; gap:3px;">
+                                <button class="btn-report" th:attr="data-id=${r.car.id}, data-name=${r.car.make + ' ' + r.car.model}" onclick="generateServiceReport(this.getAttribute('data-id'), this.getAttribute('data-name'), 'view')">👁️</button>
+                                <button class="btn-report" th:attr="data-id=${r.car.id}, data-name=${r.car.make + ' ' + r.car.model}" onclick="generateServiceReport(this.getAttribute('data-id'), this.getAttribute('data-name'), 'download')">📥</button>
+                            </div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:4px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.05);">
+                            <span style="font-size:10px;">💰 Costs</span>
+                            <div style="display:flex; gap:3px;">
+                                <button class="btn-report" th:attr="data-id=${r.car.id}, data-name=${r.car.make + ' ' + r.car.model}" onclick="generateCostReport(this.getAttribute('data-id'), this.getAttribute('data-name'), 'view')">👁️</button>
+                                <button class="btn-report" th:attr="data-id=${r.car.id}, data-name=${r.car.make + ' ' + r.car.model}" onclick="generateCostReport(this.getAttribute('data-id'), this.getAttribute('data-name'), 'download')">📥</button>
+                            </div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:4px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.05);">
+                            <span style="font-size:10px;">⏰ Upcoming</span>
+                            <div style="display:flex; gap:3px;">
+                                <button class="btn-report" th:attr="data-id=${r.car.id}, data-name=${r.car.make + ' ' + r.car.model}" onclick="generateUpcomingReport(this.getAttribute('data-id'), this.getAttribute('data-name'), 'view')">👁️</button>
+                                <button class="btn-report" th:attr="data-id=${r.car.id}, data-name=${r.car.make + ' ' + r.car.model}" onclick="generateUpcomingReport(this.getAttribute('data-id'), this.getAttribute('data-name'), 'download')">📥</button>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td th:if="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN'}" style="display:flex;gap:.3rem;flex-wrap:wrap">
+                    <a th:if="${(userRole == 'ADMIN' or userRole == 'SUPER_ADMIN') and r.status != null and r.status.name() == 'PENDING'}"
+                       th:href="@{/service-records/{id}/complete(id=${r.id})}"
+                       class="btn btn-success btn-sm">✔ Done</a>
+                    <a th:if="${userRole == 'ADMIN' or userRole == 'SUPER_ADMIN'}"
+                       th:href="@{/service-records/{id}/edit(id=${r.id})}" class="btn btn-warning btn-sm">Edit</a>
+                    <a th:href="@{/service-records/{id}/delete(id=${r.id})}" class="btn btn-danger btn-sm"
+                       onclick="return confirm('Delete this record permanently?')">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    async function generateServiceReport(carId, carName, action) {
+        const res = await fetch(`/service-records/api?carId=${carId}`);
+        const records = await res.json();
+        createPDF(carName, "Service History Report ⭐", ["Date", "Type", "Description", "Status"],
+            records.map(r => [r.date, r.serviceType, r.description, r.status]), action);
+    }
+
+    async function generateCostReport(carId, carName, action) {
+        const res = await fetch(`/service-records/api?carId=${carId}`);
+        const records = await res.json();
+        const total = records.reduce((sum, r) => sum + (r.cost || 0), 0);
+        createPDF(carName, "Maintenance Cost Report 💰", ["Date", "Service Item", "Cost (Rs.)"],
+            [...records.map(r => [r.date, r.serviceType, r.cost || 0]),
+             [{content: "TOTAL INVESTMENT", colSpan: 2, styles: {fillColor: [240, 240, 240], fontStyle: 'bold'}},
+              {content: "Rs. " + total.toFixed(2), styles: {fillColor: [240, 240, 240], fontStyle: 'bold'}}]],
+            action
+        );
+    }
+
+    async function generateUpcomingReport(carId, carName, action) {
+        const res = await fetch(`/reminders/api?carId=${carId}`);
+        const reminders = await res.json();
+        createPDF(carName, "Upcoming Maintenance Report ⏰", ["Reminder Type", "Due Date", "Status"],
+            reminders.map(r => [r.reminderType, r.dueDate || '—', r.status]), action);
+    }
+
+    function createPDF(carName, title, headers, data, action) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Brand Header
+        doc.setFontSize(22); doc.setTextColor(124, 58, 237);
+        doc.text("CarTracker", 14, 20);
+        doc.setFontSize(10); doc.setTextColor(100);
+        doc.text("Premium Car Service Management", 14, 26);
+
+        // Report Info
+        doc.setFontSize(14); doc.setTextColor(0);
+        doc.text(title, 14, 40);
+        doc.setFontSize(10);
+        doc.text(`Vehicle: ${carName}`, 14, 48);
+        doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 53);
+
+        doc.autoTable({
+            startY: 60,
+            head: [headers],
+            body: data,
+            theme: 'striped',
+            headStyles: { fillColor: [124, 58, 237], textColor: [255, 255, 255] },
+            styles: { fontSize: 9, cellPadding: 4 }
+        });
+
+        if (action === 'download') {
+            doc.save(`${carName.replace(/\s+/g, '_')}_Report_${new Date().getTime()}.pdf`);
+        } else {
+            window.open(doc.output('bloburl'), '_blank');
+        }
+    }
+</script>
+</body>
+</html>
